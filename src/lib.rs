@@ -3,18 +3,24 @@ use anchor_spl::token::Token;
 use rust_decimal::prelude::*;
 use solana_program::pubkey;
 
-pub(crate) mod context;
-pub(crate) mod id;
-pub(crate) mod types;
+extern crate self as zeta_abi;
 
-use crate::context::*;
-use crate::id::*;
-use crate::types::*;
+pub mod context;
+pub mod dex;
+pub mod id;
+pub mod types;
+pub mod zeta_keys;
+
+pub use crate::context::*;
+pub use crate::dex::*;
+pub use crate::id::*;
+pub use crate::types::*;
+pub use crate::zeta_keys::*;
 
 use bytemuck::{Pod, Zeroable};
 
 #[program]
-mod zeta_abi {
+mod zeta {
     #![allow(dead_code)]
     #![allow(unused_variables)]
     #![allow(clippy::too_many_arguments)]
