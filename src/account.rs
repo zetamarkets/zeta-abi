@@ -207,6 +207,12 @@ pub struct Greeks {
     pub _padding: [u8; 1593],                            // 1593
 } // 10232
 
+#[account]
+#[derive(Default)]
+pub struct OpenOrdersMap {
+    pub user_key: Pubkey,
+}
+
 #[zero_copy]
 #[derive(Default, Debug)]
 #[repr(packed)]

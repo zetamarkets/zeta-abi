@@ -5,17 +5,17 @@ use solana_program::pubkey;
 
 extern crate self as zeta_abi;
 
+pub mod account;
 pub mod context;
 pub mod cpi;
 pub mod dex;
 pub mod id;
-pub mod types;
 
+pub use crate::account::*;
 pub use crate::context::*;
 pub use crate::cpi::*;
 pub use crate::dex::*;
 pub use crate::id::*;
-pub use crate::types::*;
 
 use bytemuck::{Pod, Zeroable};
 
@@ -108,6 +108,14 @@ mod zeta {
     }
 
     pub(crate) fn liquidate(ctx: Context<Liquidate>, size: u64) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn close_open_orders(ctx: Context<CloseOpenOrders>, _map_nonce: u8) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn close_margin_account(_ctx: Context<CloseMarginAccount>) -> Result<()> {
         Ok(())
     }
 }

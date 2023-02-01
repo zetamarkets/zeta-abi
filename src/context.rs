@@ -29,7 +29,7 @@ pub struct InitializeOpenOrders<'info> {
     pub market: UncheckedAccount<'info>,
     pub serum_authority: UncheckedAccount<'info>,
     #[account(mut)]
-    pub open_orders_map: UncheckedAccount<'info>,
+    pub open_orders_map: Box<Account<'info, OpenOrdersMap>>,
     pub rent: Sysvar<'info, Rent>,
 }
 
@@ -203,4 +203,30 @@ pub struct CancelAccounts<'info> {
     pub asks: UncheckedAccount<'info>,
     #[account(mut)]
     pub event_queue: UncheckedAccount<'info>,
+}
+
+#[derive(Accounts)]
+pub struct CloseOpenOrders<'info> {
+    pub state: AccountLoader<'info, State>,
+    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub dex_program: Program<'info, cpi::Dex>,
+    #[account(mut)]
+    pub open_orders: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub margin_account: AccountLoader<'info, MarginAccount>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    pub market: UncheckedAccount<'info>,
+    pub serum_authority: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub open_orders_map: Box<Account<'info, OpenOrdersMap>>,
+}
+
+#[derive(Accounts)]
+pub struct CloseMarginAccount<'info> {
+    #[account(mut)]
+    pub margin_account: AccountLoader<'info, MarginAccount>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    pub zeta_group: AccountLoader<'info, ZetaGroup>,
 }
