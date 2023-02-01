@@ -13,15 +13,3 @@ impl anchor_lang::Id for ZetaProgram {
         ID
     }
 }
-
-#[derive(Clone)]
-pub struct Dex;
-
-impl anchor_lang::Id for Dex {
-    fn id() -> Pubkey {
-        match cfg!(feature = "mainnet") {
-            true => pubkey!("zDEXqXEG7gAyxb1Kg9mK5fPnUdENCGKzWrM21RMdWRq"),
-            false => pubkey!("5CmWtUihvSrJpaUrpJ3H1jUa9DRjYz4v2xs6c3EgQWMf"),
-        }
-    }
-}

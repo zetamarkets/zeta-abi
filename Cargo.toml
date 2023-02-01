@@ -19,7 +19,4 @@ anchor-spl = "0.24.2"
 solana-program = "1.9.13"
 bytemuck = { version = "1.4.0" }
 rust_decimal = { git = "https://github.com/zetamarkets/rust-decimal.git", features = ["maths"] }
-pyth-sdk-solana = "0.4.1"
-serde = "1"
-serde_json = "1"
-anyhow = "1.0.66"
+chainlink_solana = "1.0.0"

@@ -1,13 +1,9 @@
-use crate::*;
+#![allow(dead_code)]
 
-use serde::Serialize;
-use serde_json;
-use std::fmt;
-use std::slice::Iter;
+use crate::*;
 
 #[account(zero_copy)]
 #[repr(packed)]
-#[derive(Serialize, Debug)]
 pub struct State {
     // Admin authority
     pub admin: Pubkey,                                   // 32
@@ -32,11 +28,8 @@ pub struct State {
     pub native_option_underlying_fee_percentage: u64,    // 8
     pub referrals_admin: Pubkey,                         // 32
     pub referrals_rewards_wallet_nonce: u8,              // 1
-    pub _p1: [u8; 32],                                   // 107
-    pub _p2: [u8; 32],                                   // 107
-    pub _p3: [u8; 32],                                   // 107
-    pub _p4: [u8; 11],                                   // 107
-}
+    pub _padding: [u8; 107],                             // 107
+} // 255
 
 #[account(zero_copy)]
 #[repr(packed)]
@@ -61,10 +54,11 @@ pub struct ZetaGroup {
     pub asset: Asset,                             // 1
     pub expiry_interval_seconds: u32,             // 4
     pub new_expiry_threshold_seconds: u32,        // 4
-    pub perp_parameters: PerpParameters,          // 56
+    pub perp_parameters: PerpParameters,          // 24
     pub perp_sync_queue: Pubkey,                  // 32
+    pub oracle_backup_feed: Pubkey,               // 32
     pub padding: [u8; 966],                       // 966
-}
+} // 7696
 
 #[zero_copy]
 #[repr(packed)]
@@ -76,11 +70,10 @@ pub struct Product {
     // Tracks whether the market has been wiped after expiration
     pub dirty: bool,
     pub kind: Kind,
-}
+} // 32 + 9 + 1 + 1 = 43 bytes
 
 #[zero_copy]
 #[repr(packed)]
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Strike {
     is_set: bool,
@@ -135,8 +128,7 @@ pub struct PerpParameters {
     pub min_funding_rate_percent: i64, // 8
     pub max_funding_rate_percent: i64, // 8
     pub impact_cash_delta: u64,        // 8
-    pub padding: [u8; 32],
-} // 56
+} // 24
 
 #[zero_copy]
 #[repr(packed)]
@@ -164,9 +156,10 @@ pub struct MarginAccount {
     pub rebalance_amount: i64,                         // 8
     pub asset: Asset,                                  // 1
     pub account_type: MarginAccountType,               // 1
-    pub last_funding_delta: i128,                      // 16
-    pub _padding: [u8; 370],                           // 370
-}
+    pub last_funding_delta: AnchorDecimal,             // 16
+    pub delegated_pubkey: Pubkey,                      // 32
+    pub _padding: [u8; 338],                           // 338
+} // 6144
 
 #[zero_copy]
 #[derive(Default, Debug)]
@@ -189,11 +182,11 @@ pub struct AnchorDecimal {
 
 #[account(zero_copy)]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct Greeks {
     pub nonce: u8,                                       // 1
     pub mark_prices: [u64; 46],                          // 8 * 46 = 368
-    pub _mark_prices_padding: [u64; 92],                 // 8 * 92 =  736
+    pub _mark_prices_padding: [u64; 91],                 // 8 * 91 =  728
+    pub perp_mark_price: u64,                            // 8
     pub product_greeks: [ProductGreeks; 22],             // 22 * 40 = 880
     pub _product_greeks_padding: [ProductGreeks; 44],    // 44 * 40 = 1760
     pub update_timestamp: [u64; 2],                      // 16
@@ -206,13 +199,13 @@ pub struct Greeks {
     pub volatility: [u64; 10],                           // 80
     pub _volatility_padding: [u64; 20],                  // 160
     pub node_keys: [Pubkey; 138],                        // 138 * 32 = 4416
-    pub halt_force_pricing: [bool; 5],                   // 5
-    pub halt_force_perp_pricing: bool,                   // 1
+    pub halt_force_pricing: [bool; 6],                   // 6
     pub perp_update_timestamp: u64,                      // 8
-    pub perp_funding_delta: i128,                        // 16
-    pub perp_latest_funding_rate: i128,                  // 16
-    pub _padding: [u8; 1601],                            // 1601
-}
+    pub perp_funding_delta: AnchorDecimal,               // 16
+    pub perp_latest_funding_rate: AnchorDecimal,         // 16
+    pub perp_latest_midpoint: u64,                       // 8
+    pub _padding: [u8; 1593],                            // 1593
+} // 10232
 
 #[zero_copy]
 #[derive(Default, Debug)]
@@ -255,7 +248,6 @@ pub enum MarginAccountType {
 
 #[repr(u8)]
 #[derive(PartialEq, Debug)]
-#[allow(dead_code)]
 pub enum ExpirySeriesStatus {
     Uninitialized = 0, // Still in default state
     Initialized = 1,   // Initialized but not active yet
@@ -266,20 +258,20 @@ pub enum ExpirySeriesStatus {
 
 #[zero_copy]
 #[repr(packed)]
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct HaltState {
     halted: bool,                             // 1
     spot_price: u64,                          // 8
     timestamp: u64,                           // 8
     mark_prices_set: [bool; 2],               // 2
-    _mark_prices_set_padding: [bool; 4],      // 4
+    _mark_prices_set_padding: [bool; 3],      // 3
+    perp_mark_price_set: bool,                // 1
     market_nodes_cleaned: [bool; 2],          // 2
     _market_nodes_cleaned_padding: [bool; 4], // 4
     market_cleaned: [bool; 46],               // 46
     _market_cleaned_padding: [bool; 91],      // 91
     perp_market_cleaned: bool,                // 1
-}
+} // 167
 
 #[repr(u8)]
 #[derive(PartialEq, Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
@@ -297,6 +289,8 @@ pub enum OrderType {
     Limit = 0,
     PostOnly = 1,
     FillOrKill = 2,
+    ImmediateOrCancel = 3,
+    PostOnlySlide = 4,
 }
 
 #[repr(u8)]
@@ -306,31 +300,6 @@ pub enum Asset {
     BTC = 1,
     ETH = 2,
     UNDEFINED = 255,
-}
-
-impl Asset {
-    pub fn to_underlying_mint(&self) -> Pubkey {
-        match self {
-            Asset::SOL => {
-                pubkey!("So11111111111111111111111111111111111111112")
-            }
-            Asset::BTC => {
-                pubkey!("qfnqNqs3nCAHjnyCgLRDbBtq4p2MtHZxw8YjSyYhPoL")
-            }
-            Asset::ETH => {
-                pubkey!("FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf")
-            }
-            _ => {
-                assert!(false, "invalid asset");
-                Pubkey::default()
-            }
-        }
-    }
-
-    pub fn iterator() -> Iter<'static, Asset> {
-        static ASSETS: [Asset; 3] = [Asset::SOL, Asset::BTC, Asset::ETH];
-        ASSETS.iter()
-    }
 }
 
 #[repr(u8)]
@@ -368,10 +337,3 @@ unsafe impl Zeroable for AnchorDecimal {}
 
 #[cfg(target_endian = "little")]
 unsafe impl Pod for AnchorDecimal {}
-
-impl fmt::Display for State {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let out = serde_json::to_string(self).unwrap_or_default();
-        write!(f, "{}", out)
-    }
-}

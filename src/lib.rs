@@ -1,21 +1,21 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::Token;
+use anchor_spl::token::{Mint, Token, TokenAccount};
 use rust_decimal::prelude::*;
 use solana_program::pubkey;
 
 extern crate self as zeta_abi;
 
 pub mod context;
+pub mod cpi;
 pub mod dex;
 pub mod id;
 pub mod types;
-pub mod zeta_keys;
 
 pub use crate::context::*;
+pub use crate::cpi::*;
 pub use crate::dex::*;
 pub use crate::id::*;
 pub use crate::types::*;
-pub use crate::zeta_keys::*;
 
 use bytemuck::{Pod, Zeroable};
 
@@ -43,7 +43,7 @@ mod zeta {
         Ok(())
     }
 
-    pub(crate) fn place_order_v3(
+    pub(crate) fn place_order_v4(
         ctx: Context<PlaceOrder>,
         price: u64,
         size: u64,
@@ -51,11 +51,12 @@ mod zeta {
         order_type: OrderType,
         client_order_id: Option<u64>,
         tag: Option<String>, // Not stored, only used when sniffing the transactions
+        tif_offset: Option<u16>,
     ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn place_perp_order(
+    pub(crate) fn place_perp_order_v2(
         ctx: Context<PlacePerpOrder>,
         price: u64,
         size: u64,
@@ -63,6 +64,7 @@ mod zeta {
         order_type: OrderType,
         client_order_id: Option<u64>,
         tag: Option<String>, // Not stored, only used when sniffing the transactions
+        tif_offset: Option<u16>,
     ) -> Result<()> {
         Ok(())
     }
