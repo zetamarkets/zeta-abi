@@ -16,7 +16,7 @@ pub struct InitializeMarginAccount<'info> {
 pub struct InitializeOpenOrders<'info> {
     pub state: AccountLoader<'info, State>,
     pub zeta_group: AccountLoader<'info, ZetaGroup>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub system_program: Program<'info, System>,
     #[account(mut)]
     pub open_orders: UncheckedAccount<'info>,
@@ -40,7 +40,7 @@ pub struct PlaceOrder<'info> {
     #[account(mut)]
     pub margin_account: AccountLoader<'info, MarginAccount>,
     pub authority: Signer<'info>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub token_program: Program<'info, Token>,
     pub serum_authority: AccountInfo<'info>,
     pub greeks: AccountLoader<'info, Greeks>,
@@ -50,7 +50,7 @@ pub struct PlaceOrder<'info> {
     pub market_accounts: MarketAccounts<'info>,
     pub oracle: UncheckedAccount<'info>,
     pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub market_node: UncheckedAccount<'info>,
     #[account(mut)]
@@ -65,7 +65,7 @@ pub struct PlacePerpOrder<'info> {
     #[account(mut)]
     pub margin_account: AccountLoader<'info, MarginAccount>,
     pub authority: Signer<'info>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub token_program: Program<'info, Token>,
     pub serum_authority: AccountInfo<'info>,
     pub greeks: AccountLoader<'info, Greeks>,
@@ -75,7 +75,7 @@ pub struct PlacePerpOrder<'info> {
     pub market_accounts: MarketAccounts<'info>,
     pub oracle: UncheckedAccount<'info>,
     pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub market_mint: Box<Account<'info, Mint>>,
     pub mint_authority: UncheckedAccount<'info>,
@@ -116,7 +116,7 @@ pub struct Withdraw<'info> {
     pub greeks: AccountLoader<'info, Greeks>,
     pub oracle: UncheckedAccount<'info>,
     pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub socialized_loss_account: UncheckedAccount<'info>,
 }
@@ -191,7 +191,7 @@ pub struct CancelAccounts<'info> {
     pub state: AccountLoader<'info, State>,
     #[account(mut)]
     pub margin_account: AccountLoader<'info, MarginAccount>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub serum_authority: UncheckedAccount<'info>,
     #[account(mut)]
     pub open_orders: UncheckedAccount<'info>,
@@ -209,7 +209,7 @@ pub struct CancelAccounts<'info> {
 pub struct CloseOpenOrders<'info> {
     pub state: AccountLoader<'info, State>,
     pub zeta_group: AccountLoader<'info, ZetaGroup>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     #[account(mut)]
     pub open_orders: UncheckedAccount<'info>,
     #[account(mut)]

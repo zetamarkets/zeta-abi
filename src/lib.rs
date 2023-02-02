@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use rust_decimal::prelude::*;
@@ -7,13 +9,11 @@ extern crate self as zeta_abi;
 
 pub mod account;
 pub mod context;
-pub mod cpi;
 pub mod dex;
 pub mod id;
 
 pub use crate::account::*;
 pub use crate::context::*;
-pub use crate::cpi::*;
 pub use crate::dex::*;
 pub use crate::id::*;
 
