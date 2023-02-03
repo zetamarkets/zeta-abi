@@ -18,5 +18,4 @@ anchor-lang = "0.24.2"
 anchor-spl = "0.24.2"
 solana-program = "1.9.13"
 bytemuck = { version = "1.4.0" }
-rust_decimal = { git = "https://github.com/zetamarkets/rust-decimal.git", features = ["maths"] }
 chainlink_solana = "1.0.0"

@@ -2,7 +2,6 @@
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use rust_decimal::prelude::*;
 use solana_program::pubkey;
 
 extern crate self as zeta_abi;

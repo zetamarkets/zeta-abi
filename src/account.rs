@@ -33,7 +33,6 @@ pub struct State {
 
 #[account(zero_copy)]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct ZetaGroup {
     pub nonce: u8,                                // 1
     pub vault_nonce: u8,                          // 1
@@ -62,7 +61,6 @@ pub struct ZetaGroup {
 
 #[zero_copy]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct Product {
     // Serum market
     pub market: Pubkey,
@@ -74,14 +72,13 @@ pub struct Product {
 
 #[zero_copy]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct Strike {
     is_set: bool,
     value: u64,
 }
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct PricingParameters {
     pub option_trade_normalizer: AnchorDecimal, // 16
@@ -97,7 +94,7 @@ pub struct PricingParameters {
 } // 112
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct MarginParameters {
     // Futures
@@ -122,7 +119,7 @@ pub struct MarginParameters {
 } // 120 bytes.
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct PerpParameters {
     pub min_funding_rate_percent: i64, // 8
@@ -132,7 +129,6 @@ pub struct PerpParameters {
 
 #[zero_copy]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct ExpirySeries {
     pub active_ts: u64,
     pub expiry_ts: u64,
@@ -162,7 +158,7 @@ pub struct MarginAccount {
 } // 6144
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct ProductGreeks {
     pub delta: u64,
@@ -171,7 +167,7 @@ pub struct ProductGreeks {
 } // 40
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct AnchorDecimal {
     pub flags: u32,
@@ -214,7 +210,7 @@ pub struct OpenOrdersMap {
 }
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct Position {
     pub size: i64,
@@ -222,7 +218,7 @@ pub struct Position {
 } // 16
 
 #[zero_copy]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(packed)]
 pub struct OrderState {
     pub closing_orders: u64,
@@ -253,7 +249,7 @@ pub enum MarginAccountType {
 }
 
 #[repr(u8)]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq)]
 pub enum ExpirySeriesStatus {
     Uninitialized = 0, // Still in default state
     Initialized = 1,   // Initialized but not active yet
@@ -264,7 +260,6 @@ pub enum ExpirySeriesStatus {
 
 #[zero_copy]
 #[repr(packed)]
-#[derive(Debug)]
 pub struct HaltState {
     halted: bool,                             // 1
     spot_price: u64,                          // 8
@@ -280,7 +275,7 @@ pub struct HaltState {
 } // 167
 
 #[repr(u8)]
-#[derive(PartialEq, Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
+#[derive(PartialEq, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
 pub enum Kind {
     Uninitialized = 0,
     Call = 1,
@@ -300,7 +295,7 @@ pub enum OrderType {
 }
 
 #[repr(u8)]
-#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Clone, Copy, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Clone, Copy)]
 pub enum Asset {
     SOL = 0,
     BTC = 1,
@@ -315,31 +310,3 @@ pub enum OrderCompleteType {
     Fill = 1,
     Booted = 2,
 }
-
-impl From<Decimal> for AnchorDecimal {
-    fn from(decimal: Decimal) -> AnchorDecimal {
-        AnchorDecimal {
-            flags: decimal.flags,
-            hi: decimal.hi,
-            lo: decimal.lo,
-            mid: decimal.mid,
-        }
-    }
-}
-
-impl From<AnchorDecimal> for Decimal {
-    fn from(decimal: AnchorDecimal) -> Decimal {
-        Decimal {
-            flags: decimal.flags,
-            hi: decimal.hi,
-            lo: decimal.lo,
-            mid: decimal.mid,
-        }
-    }
-}
-
-#[cfg(target_endian = "little")]
-unsafe impl Zeroable for AnchorDecimal {}
-
-#[cfg(target_endian = "little")]
-unsafe impl Pod for AnchorDecimal {}
