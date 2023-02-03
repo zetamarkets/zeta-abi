@@ -147,8 +147,6 @@ pub struct Liquidate<'info> {
     pub liquidated_margin_account: AccountLoader<'info, MarginAccount>,
 }
 
-// Market accounts are the accounts used to place orders against the dex minus
-// common accounts, i.e., program ids, sysvars, and the `pc_wallet`.
 #[derive(Accounts, Clone)]
 pub struct MarketAccounts<'info> {
     #[account(mut)]
@@ -161,23 +159,12 @@ pub struct MarketAccounts<'info> {
     pub bids: UncheckedAccount<'info>,
     #[account(mut)]
     pub asks: UncheckedAccount<'info>,
-    // The `spl_token::Account` that funds will be taken from, i.e., transferred
-    // from the user into the market's vault.
-    //
-    // For bids, this is the base currency. For asks, the quote.
-    // This has to be owned by serum_authority PDA as serum checks that the owner
-    // of open orders also owns this token account
     #[account(mut)]
     pub order_payer_token_account: UncheckedAccount<'info>,
-    // Also known as the "base" currency. For a given A/B market,
-    // this is the vault for the A mint.
     #[account(mut)]
     pub coin_vault: UncheckedAccount<'info>,
-    // Also known as the "quote" currency. For a given A/B market,
-    // this is the vault for the B mint.
     #[account(mut)]
     pub pc_vault: UncheckedAccount<'info>,
-    // User wallets, used for settling.
     #[account(mut)]
     pub coin_wallet: UncheckedAccount<'info>,
     #[account(mut)]

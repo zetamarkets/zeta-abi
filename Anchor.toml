@@ -1,0 +1,9 @@
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[programs.localnet]
+zeta-abi = "z6ikFPqPGi16hCFfytMBP2Ao2iNGaN57mBQHvFGAit7"
+
+[workspace]
+members = ["."]

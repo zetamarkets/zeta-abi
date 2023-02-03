@@ -4,8 +4,6 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use solana_program::pubkey;
 
-extern crate self as zeta_abi;
-
 pub mod account;
 pub mod context;
 pub mod dex;
@@ -19,7 +17,7 @@ pub use crate::id::*;
 use bytemuck::{Pod, Zeroable};
 
 #[program]
-mod zeta {
+mod zeta_abi {
     #![allow(dead_code)]
     #![allow(unused_variables)]
     #![allow(clippy::too_many_arguments)]
