@@ -130,6 +130,8 @@ pub struct CancelOrder<'info> {
 pub struct ForceCancelOrders<'info> {
     pub greeks: UncheckedAccount<'info>,
     pub oracle: UncheckedAccount<'info>,
+    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     pub cancel_accounts: CancelAccounts<'info>,
 }
 
