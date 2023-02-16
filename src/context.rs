@@ -143,6 +143,8 @@ pub struct Liquidate<'info> {
     pub liquidator_margin_account: AccountLoader<'info, MarginAccount>,
     pub greeks: AccountLoader<'info, Greeks>,
     pub oracle: UncheckedAccount<'info>,
+    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     pub market: UncheckedAccount<'info>,
     pub zeta_group: AccountLoader<'info, ZetaGroup>,
     #[account(mut)]
