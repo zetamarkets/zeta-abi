@@ -208,6 +208,7 @@ pub struct CloseOpenOrders<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
     pub market: UncheckedAccount<'info>,
+    #[account(mut)]
     pub serum_authority: UncheckedAccount<'info>,
     #[account(mut)]
     pub open_orders_map: Box<Account<'info, OpenOrdersMap>>,
