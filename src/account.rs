@@ -77,6 +77,38 @@ pub struct Strike {
     value: u64,
 }
 
+impl Strike {
+    pub fn is_set(&self) -> bool {
+        self.is_set
+    }
+
+    pub fn get_strike(&self) -> Result<u64> {
+        if !self.is_set() {
+            return Err(error!(ZetaError::ProductStrikeUninitialized));
+        }
+        Ok(self.value)
+    }
+
+    pub fn set(&mut self, strike: u64) -> Result<()> {
+        // There shouldn't be a case where you set a strike without resetting it first.
+        if self.is_set() {
+            return Err(error!(ZetaError::CannotSetInitializedStrike));
+        }
+        self.is_set = true;
+        self.value = strike;
+        Ok(())
+    }
+
+    pub fn reset(&mut self) -> Result<()> {
+        if !self.is_set() {
+            return Err(error!(ZetaError::CannotResetUninitializedStrike));
+        }
+        self.value = 0;
+        self.is_set = false;
+        Ok(())
+    }
+}
+
 #[zero_copy]
 #[derive(Default)]
 #[repr(packed)]
@@ -157,6 +189,94 @@ pub struct MarginAccount {
     pub _padding: [u8; 338],                           // 338
 } // 6144
 
+impl MarginAccount {
+    // Calculates the total initial margin for all open orders and positions.
+    pub fn get_initial_margin(&self, greeks: &Greeks, zeta_group: &ZetaGroup, spot: u64) -> u64 {
+        let initial_margin_requirement: u64 = self
+            .product_ledgers
+            .iter()
+            .enumerate()
+            .map(|(i, ledger)| {
+                ledger.get_initial_margin(
+                    greeks.mark_prices[i],
+                    &zeta_group.products[i],
+                    spot,
+                    &zeta_group.margin_parameters,
+                )
+            })
+            .sum();
+
+        // Perps have a different layout
+        let perp_margin_requirement: u64 = self.perp_product_ledger.get_initial_margin(
+            spot,
+            &zeta_group.perp,
+            spot,
+            &zeta_group.margin_parameters,
+        );
+
+        msg!(
+            "get_initial_margin {} {}",
+            initial_margin_requirement,
+            perp_margin_requirement
+        );
+
+        initial_margin_requirement
+            .checked_add(perp_margin_requirement)
+            .unwrap()
+    }
+
+    pub fn get_maintenance_margin(
+        &self,
+        greeks: &Greeks,
+        zeta_group: &ZetaGroup,
+        spot: u64,
+    ) -> u64 {
+        let maintenance_margin_requirement: u64 = self
+            .product_ledgers
+            .iter()
+            .enumerate()
+            .map(|(i, product_ledgers)| {
+                product_ledgers.get_maintenance_margin(
+                    greeks.mark_prices[i],
+                    &zeta_group.products[i],
+                    spot,
+                    &zeta_group.margin_parameters,
+                )
+            })
+            .sum();
+
+        // Perps have a different layout
+        let perp_margin_requirement: u64 = self.perp_product_ledger.get_maintenance_margin(
+            spot,
+            &zeta_group.perp,
+            spot,
+            &zeta_group.margin_parameters,
+        );
+
+        maintenance_margin_requirement
+            .checked_add(perp_margin_requirement)
+            .unwrap()
+    }
+
+    pub fn get_unrealized_pnl(&self, greeks: &Greeks, spot: u64) -> i64 {
+        let pnl: i64 = self
+            .product_ledgers
+            .iter()
+            .enumerate()
+            .map(|(i, product_ledger)| {
+                (product_ledger
+                    .position
+                    .get_unrealized_pnl(greeks.mark_prices[i]) as i128) as i64
+            })
+            .sum();
+
+        // Perps have a different layout
+        let perp_pnl: i64 = self.perp_product_ledger.position.get_unrealized_pnl(spot);
+
+        pnl.checked_add(perp_pnl).unwrap()
+    }
+}
+
 #[zero_copy]
 #[derive(Default)]
 #[repr(packed)]
@@ -217,6 +337,38 @@ pub struct Position {
     pub cost_of_trades: u64,
 } // 16
 
+impl Position {
+    pub fn size_abs(&self) -> u64 {
+        self.size.abs() as u64
+    }
+
+    pub fn get_unrealized_pnl(&self, mark_price: u64) -> i64 {
+        if self.size == 0 {
+            0
+        } else if self.size > 0 {
+            (self.size as i128)
+                .checked_mul(mark_price as i128)
+                .unwrap()
+                .checked_div(POSITION_PRECISION_DENOMINATOR as i128)
+                .unwrap()
+                .checked_sub(self.cost_of_trades as i128)
+                .unwrap()
+                .try_into()
+                .unwrap()
+        } else {
+            (self.size as i128)
+                .checked_mul(mark_price as i128)
+                .unwrap()
+                .checked_div(POSITION_PRECISION_DENOMINATOR as i128)
+                .unwrap()
+                .checked_add(self.cost_of_trades as i128)
+                .unwrap()
+                .try_into()
+                .unwrap()
+        }
+    }
+}
+
 #[zero_copy]
 #[derive(Default)]
 #[repr(packed)]
@@ -232,6 +384,131 @@ pub struct ProductLedger {
     pub position: Position,
     pub order_state: OrderState,
 } // 40
+
+impl ProductLedger {
+    pub fn get_initial_margin(
+        &self,
+        mark_price: u64,
+        product: &Product,
+        spot: u64,
+        margin_parameters: &MarginParameters,
+    ) -> u64 {
+        let strike: u64 = match product.kind == Kind::Perp {
+            true => 0,
+            false => match product.strike.get_strike() {
+                Ok(strike) => strike,
+                Err(_) => return 0,
+            },
+        };
+
+        let mut long_lots: u64 = self.order_state.opening_orders[BID_ORDERS_INDEX];
+        let mut short_lots: u64 = self.order_state.opening_orders[ASK_ORDERS_INDEX];
+        if self.position.size > 0 {
+            long_lots = long_lots.checked_add(self.position.size_abs()).unwrap();
+        } else if self.position.size < 0 {
+            short_lots = short_lots.checked_add(self.position.size_abs()).unwrap();
+        }
+
+        let mut long_initial_margin: u128 = 0;
+        let mut short_initial_margin: u128 = 0;
+
+        if long_lots > 0 {
+            long_initial_margin = (long_lots as u128)
+                .checked_mul(
+                    get_initial_margin_per_lot(
+                        spot,
+                        strike,
+                        mark_price,
+                        product.kind,
+                        Side::Bid,
+                        margin_parameters,
+                    )
+                    .unwrap()
+                    .try_into()
+                    .unwrap(),
+                )
+                .unwrap();
+        }
+
+        if short_lots > 0 {
+            short_initial_margin = (short_lots as u128)
+                .checked_mul(
+                    get_initial_margin_per_lot(
+                        spot,
+                        strike,
+                        mark_price,
+                        product.kind,
+                        Side::Ask,
+                        margin_parameters,
+                    )
+                    .unwrap()
+                    .try_into()
+                    .unwrap(),
+                )
+                .unwrap();
+        }
+
+        if product.kind == Kind::Future || product.kind == Kind::Perp {
+            if long_lots > short_lots {
+                return long_initial_margin
+                    .checked_div(POSITION_PRECISION_DENOMINATOR)
+                    .unwrap()
+                    .try_into()
+                    .unwrap();
+            } else {
+                return short_initial_margin
+                    .checked_div(POSITION_PRECISION_DENOMINATOR)
+                    .unwrap()
+                    .try_into()
+                    .unwrap();
+            }
+        }
+
+        long_initial_margin
+            .checked_add(short_initial_margin)
+            .unwrap()
+            .checked_div(POSITION_PRECISION_DENOMINATOR)
+            .unwrap()
+            .try_into()
+            .unwrap()
+    }
+
+    pub fn get_maintenance_margin(
+        &self,
+        mark_price: u64,
+        product: &Product,
+        spot: u64,
+        margin_parameters: &MarginParameters,
+    ) -> u64 {
+        if self.position.size == 0 {
+            return 0;
+        }
+
+        let strike: u64 = match product.kind == Kind::Perp {
+            true => 0,
+            false => match product.strike.get_strike() {
+                Ok(strike) => strike,
+                Err(_) => return 0,
+            },
+        };
+
+        let maintenance_margin_per_lot = get_maintenance_margin_per_lot(
+            spot,
+            strike,
+            mark_price,
+            product.kind,
+            self.position.size >= 0,
+            margin_parameters,
+        )
+        .unwrap();
+
+        (self.position.size_abs() as u128)
+            .checked_mul(maintenance_margin_per_lot as u128)
+            .unwrap()
+            .checked_div(POSITION_PRECISION_DENOMINATOR)
+            .unwrap() as u64
+    }
+}
 
 #[repr(u8)]
 #[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Clone, Copy)]
