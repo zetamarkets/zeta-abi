@@ -1,0 +1,57 @@
+name: Program
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+  SOLANA_VERSION: "1.13.5"
+  ANCHOR_VERSION: "0.26.0"
+
+  build:
+    name: Build program and test
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout source
+      - uses: actions/cache@v3
+        name: Cache Cargo registry + index
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ runner.os }}-v0000-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions/cache@v3
+        name: Cache Solana Tool Suite
+        id: cache_solana
+        with:
+          path: |
+            ~/.cache/solana/
+            ~/.local/share/solana/
+          key: solana-${{ runner.os }}-v0001-${{ env.SOLANA_VERSION }}
+      - uses: actions-rs/toolchain@v1
+        if: steps.cache_solana.outputs.cache-hit != 'true'
+        name: Install Rust toolchain
+        with:
+          profile: minimal
+          toolchain: stable
+      - run: rustup component add rustfmt clippy
+      - name: Setup Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.solana.com/v${SOLANA_VERSION}/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+          PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+          solana --version
+          yes | solana-keygen new
+      - name: Build zeta-abi
+        run: cargo build
+      - name: Build abi-wrapper
+        run: cd abi-wrapper && anchor build --skip-lint
