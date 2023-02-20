@@ -21,7 +21,7 @@
 
 ABI is Zeta's cross-program integration ecosystem.
 
-This repository contains the Zeta Cross Program Invocation (CPI) interface as well as a usage example [abi-wrapper](./abi-wrapper/).
+This repository contains the Zeta Cross Program Invocation (CPI) interface as well as a usage example `abi-wrapper`.
 
 ## Cross Program Invocations
 
@@ -57,8 +57,7 @@ The accounts and relevant data that is currently supported (non-exhaustive):
 - `MarginAccount`
   - Balance
   - Positions
-- `Oracle`
-  - Price
+  - helper functions: get_initial_margin(), get_maintenance_margin(), get_unrealized_pnl()
 
 ## Programs
 
