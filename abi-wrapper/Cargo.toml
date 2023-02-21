@@ -1,19 +1,18 @@
+[lib]
+crate-type = ["cdylib", "lib"]
+
 [package]
-name = "zeta-abi"
-version = "0.2.0"
+name = "abi-wrapper"
+version = "0.1.0"
 edition = "2021"
 
 [features]
 mainnet = []
 no-entrypoint = []
 no-idl = []
-no-log-ix-name = []
 cpi = ["no-entrypoint"]
-default = ["no-entrypoint", "cpi"]
 
 [dependencies]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
-solana-program = "<1.15.0"
-bytemuck = "1.4.0"
-chainlink_solana = "1.0.0"
+zeta-abi = { path = "..", features = ["cpi"] }

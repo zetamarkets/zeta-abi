@@ -1,26 +1,29 @@
+#![doc = include_str!("../README.md")]
+
 use anchor_lang::prelude::*;
-use anchor_spl::token::Token;
-use rust_decimal::prelude::*;
+use anchor_spl::token::{Mint, Token, TokenAccount};
 use solana_program::pubkey;
 
-extern crate self as zeta_abi;
-
+pub mod account;
+pub mod constants;
 pub mod context;
 pub mod dex;
+pub mod errors;
 pub mod id;
-pub mod types;
-pub mod zeta_keys;
+pub mod utils;
 
+pub use crate::account::*;
+pub use crate::constants::*;
 pub use crate::context::*;
 pub use crate::dex::*;
+pub use crate::errors::*;
 pub use crate::id::*;
-pub use crate::types::*;
-pub use crate::zeta_keys::*;
+pub use crate::utils::*;
 
 use bytemuck::{Pod, Zeroable};
 
 #[program]
-mod zeta {
+mod zeta_abi {
     #![allow(dead_code)]
     #![allow(unused_variables)]
     #![allow(clippy::too_many_arguments)]
@@ -43,7 +46,7 @@ mod zeta {
         Ok(())
     }
 
-    pub(crate) fn place_order_v3(
+    pub(crate) fn place_order_v4(
         ctx: Context<PlaceOrder>,
         price: u64,
         size: u64,
@@ -51,11 +54,12 @@ mod zeta {
         order_type: OrderType,
         client_order_id: Option<u64>,
         tag: Option<String>, // Not stored, only used when sniffing the transactions
+        tif_offset: Option<u16>,
     ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn place_perp_order(
+    pub(crate) fn place_perp_order_v2(
         ctx: Context<PlacePerpOrder>,
         price: u64,
         size: u64,
@@ -63,6 +67,7 @@ mod zeta {
         order_type: OrderType,
         client_order_id: Option<u64>,
         tag: Option<String>, // Not stored, only used when sniffing the transactions
+        tif_offset: Option<u16>,
     ) -> Result<()> {
         Ok(())
     }
@@ -106,6 +111,14 @@ mod zeta {
     }
 
     pub(crate) fn liquidate(ctx: Context<Liquidate>, size: u64) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn close_open_orders(ctx: Context<CloseOpenOrders>, _map_nonce: u8) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn close_margin_account(_ctx: Context<CloseMarginAccount>) -> Result<()> {
         Ok(())
     }
 }

@@ -1,7 +1,5 @@
 use crate::*;
 
-use bytemuck::try_from_bytes;
-
 #[cfg(target_endian = "little")]
 unsafe impl Zeroable for MarketStateV2 {}
 
@@ -9,6 +7,7 @@ unsafe impl Zeroable for MarketStateV2 {}
 unsafe impl Pod for MarketStateV2 {}
 
 #[derive(Copy, Clone)]
+#[allow(dead_code)]
 #[cfg_attr(target_endian = "little", derive(Debug))]
 #[repr(packed)]
 pub struct MarketStateV2 {
@@ -89,25 +88,6 @@ pub struct MarketState {
     pub fee_rate_bps: u64,
     // 46
     pub referrer_rebates_accrued: u64,
-}
-
-impl MarketStateV2 {
-    pub fn deserialize(buf: &[u8]) -> Result<Self> {
-        const FLAGS: u64 = (AccountFlag::Initialized as u64)
-            | (AccountFlag::Market as u64)
-            | (AccountFlag::Permissioned as u64);
-
-        let r: &Self = bytemuck::try_from_bytes(buf).unwrap();
-
-        if r._head_pad[..] != *"serum".as_bytes()
-            || r._tail_pad[..] != *"padding".as_bytes()
-            || r.inner.account_flags != FLAGS
-        {
-            panic!("Invalid buffer for market");
-        }
-
-        Ok(*r)
-    }
 }
 
 #[derive(Copy, Clone, Debug)]
