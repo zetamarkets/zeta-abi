@@ -114,7 +114,7 @@ mod zeta_abi {
         Ok(())
     }
 
-    pub fn close_open_orders(ctx: Context<CloseOpenOrders>, _map_nonce: u8) -> Result<()> {
+    pub(crate) fn close_open_orders(ctx: Context<CloseOpenOrders>, _map_nonce: u8) -> Result<()> {
         Ok(())
     }
 

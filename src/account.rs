@@ -56,7 +56,9 @@ pub struct ZetaGroup {
     pub perp_parameters: PerpParameters,          // 24
     pub perp_sync_queue: Pubkey,                  // 32
     pub oracle_backup_feed: Pubkey,               // 32
-    pub padding: [u8; 966],                       // 966
+    pub perps_only: bool,                         // 1
+    pub flex_underlying: bool,                    // 1
+    pub padding: [u8; 964],                       // 964
 } // 7696
 
 #[zero_copy]
@@ -87,25 +89,6 @@ impl Strike {
             return Err(error!(ZetaError::ProductStrikeUninitialized));
         }
         Ok(self.value)
-    }
-
-    pub fn set(&mut self, strike: u64) -> Result<()> {
-        // There shouldn't be a case where you set a strike without resetting it first.
-        if self.is_set() {
-            return Err(error!(ZetaError::CannotSetInitializedStrike));
-        }
-        self.is_set = true;
-        self.value = strike;
-        Ok(())
-    }
-
-    pub fn reset(&mut self) -> Result<()> {
-        if !self.is_set() {
-            return Err(error!(ZetaError::CannotResetUninitializedStrike));
-        }
-        self.value = 0;
-        self.is_set = false;
-        Ok(())
     }
 }
 
@@ -212,12 +195,6 @@ impl MarginAccount {
             &zeta_group.perp,
             spot,
             &zeta_group.margin_parameters,
-        );
-
-        msg!(
-            "get_initial_margin {} {}",
-            initial_margin_requirement,
-            perp_margin_requirement
         );
 
         initial_margin_requirement
@@ -577,6 +554,7 @@ pub enum Asset {
     SOL = 0,
     BTC = 1,
     ETH = 2,
+    APT = 3,
     UNDEFINED = 255,
 }
 
