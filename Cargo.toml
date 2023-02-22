@@ -1,6 +1,6 @@
 [package]
 name = "zeta-abi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Zeta DEX ABI"
 homepage = "https://github.com/zetamarkets/zeta-abi"
@@ -23,6 +23,6 @@ default = ["no-entrypoint", "cpi"]
 [dependencies]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
-solana-program = "1.13.5"
+solana-program = "1.14.16"
 bytemuck = "1.4.0"
 chainlink_solana = "1.0.0"
