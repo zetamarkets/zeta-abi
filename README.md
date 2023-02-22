@@ -27,6 +27,11 @@ This repository contains the Zeta Cross Program Invocation (CPI) interface as we
 
 ## Cross Program Invocations
 
+### Dependencies
+
+- anchor 0.26.0
+- solana 0.14.x
+
 ### Instructions
 
 The instructions currently supported are as follows:
