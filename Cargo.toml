@@ -2,6 +2,11 @@
 name = "zeta-abi"
 version = "0.2.0"
 edition = "2021"
+description = "Zeta DEX ABI"
+homepage = "https://github.com/zetamarkets/zeta-abi"
+repository = "https://github.com/zetamarkets/zeta-abi"
+keywords = ["zet", "dex", "abi"]
+license = "Apache-2.0"
 
 [features]
 mainnet = []
