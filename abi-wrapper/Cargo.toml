@@ -15,4 +15,4 @@ cpi = ["no-entrypoint"]
 [dependencies]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
-zeta-abi = { path = "..", features = ["cpi"] }
+zeta-abi = "0.1.1"

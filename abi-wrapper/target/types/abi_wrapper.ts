@@ -1,5 +1,5 @@
 export type AbiWrapper = {
-  "version": "0.2.0",
+  "version": "0.1.0",
   "name": "abi_wrapper",
   "instructions": [
     {
@@ -1288,7 +1288,7 @@ export type AbiWrapper = {
 };
 
 export const IDL: AbiWrapper = {
-  "version": "0.2.0",
+  "version": "0.1.0",
   "name": "abi_wrapper",
   "instructions": [
     {
