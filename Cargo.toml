@@ -7,6 +7,10 @@ homepage = "https://github.com/zetamarkets/zeta-abi"
 repository = "https://github.com/zetamarkets/zeta-abi"
 keywords = ["zeta", "dex", "abi", "defi"]
 license = "Apache-2.0"
+exclude = [
+    ".github",
+    ".gitignore",
+]
 
 [features]
 mainnet = []
