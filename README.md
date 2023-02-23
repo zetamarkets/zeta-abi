@@ -23,7 +23,10 @@ ABI is Zeta's cross-program integration ecosystem.
 
 This repository contains the Zeta Cross Program Invocation (CPI) interface as well as a usage example `abi-wrapper`.
 
-[![build](../../workflows/build/badge.svg)](../../actions/workflows/build.yml)
+```toml
+# Add to dependencies
+zeta-abi = "0.1.1"
+```
 
 ## Cross Program Invocations
 
