@@ -7,7 +7,6 @@ use solana_program::pubkey;
 pub mod account;
 pub mod constants;
 pub mod context;
-pub mod dex;
 pub mod errors;
 pub mod id;
 pub mod utils;
@@ -15,12 +14,9 @@ pub mod utils;
 pub use crate::account::*;
 pub use crate::constants::*;
 pub use crate::context::*;
-pub use crate::dex::*;
 pub use crate::errors::*;
 pub use crate::id::*;
 pub use crate::utils::*;
-
-use bytemuck::{Pod, Zeroable};
 
 #[program]
 mod zeta_abi {
