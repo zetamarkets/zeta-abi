@@ -1,7 +1,10 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-Version changes are pinned to SDK releases.
+All notable changes to this project will be documented in this file. Version changes are pinned to SDK releases.
+
+## Unreleased
+
+- program: cleanup, removal of unused dependencies
 
 ## [0.1.1] 22-02-2023
 
