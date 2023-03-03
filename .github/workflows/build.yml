@@ -54,7 +54,6 @@ jobs:
           echo "[2,48,202,144,253,109,253,181,3,217,88,73,28,214,141,101,174,166,99,103,156,216,118,62,78,245,215,142,139,81,62,98,54,93,226,165,249,36,9,214,52,186,160,5,225,80,252,163,26,19,55,186,179,46,254,235,159,248,7,136,216,207,47,148]" > /home/runner/.config/solana/id.json
       - name: Setup Anchor dependencies
         shell: bash
-        working-directory: zeta
         run: |
           npm i -g @project-serum/anchor-cli@v${ANCHOR_VERSION}
       - name: Build zeta-abi
