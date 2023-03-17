@@ -28,7 +28,8 @@ pub struct State {
     pub native_option_underlying_fee_percentage: u64,    // 8
     pub referrals_admin: Pubkey,                         // 32
     pub referrals_rewards_wallet_nonce: u8,              // 1
-    pub _padding: [u8; 107],                             // 107
+    pub max_perp_delta_age: u16,                         // 2
+    pub _padding: [u8; 105],                             // 105
 } // 255
 
 #[account(zero_copy)]
