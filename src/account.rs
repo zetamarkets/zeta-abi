@@ -11,7 +11,8 @@ pub struct State {
     pub serum_nonce: u8,                                 // 1
     pub mint_auth_nonce: u8,                             // 1
     pub num_underlyings: u8,                             // 1
-    pub _null: u64,                                      // 8
+    pub num_flex_underlyings: u8,                        // 1
+    pub _null: [u8; 7],                                  // 7
     pub strike_initialization_threshold_seconds: u32,    // 4
     pub pricing_frequency_seconds: u32,                  // 4
     pub liquidator_liquidation_percentage: u32,          // 4
@@ -29,7 +30,8 @@ pub struct State {
     pub referrals_admin: Pubkey,                         // 32
     pub referrals_rewards_wallet_nonce: u8,              // 1
     pub max_perp_delta_age: u16,                         // 2
-    pub _padding: [u8; 105],                             // 105
+    pub secondary_admin: Pubkey,                         // 32
+    pub _padding: [u8; 73],                              // 73
 } // 255
 
 #[account(zero_copy)]
