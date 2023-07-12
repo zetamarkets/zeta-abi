@@ -6,8 +6,7 @@ All notable changes to this project will be documented in this file. Version cha
 
 ## [1.0.0] 12-07-2023
 
-- program: Add support for CrossMarginAccount
-- program: cleanup, removal of unused dependencies
+- program: Add support for CrossMarginAccount and respective instructions. ([#7](https://github.com/zetamarkets/zeta-abi/pull/7))
 
 ## [0.1.1] 22-02-2023
 
