@@ -9,23 +9,39 @@ pub mod abi_wrapper {
 
     use super::*;
 
-    pub fn initialize_margin_account(ctx: Context<InitializeMarginAccounts>) -> Result<()> {
-        msg!("In abi_wrapper::initialize_margin_account");
-        let init_margin_accs = zeta_abi::cpi::accounts::InitializeMarginAccount {
-            margin_account: ctx.accounts.margin_account.to_account_info(),
-            authority: ctx.accounts.authority.to_account_info(),
-            payer: ctx.accounts.payer.to_account_info(),
-            zeta_program: ctx.accounts.zeta_program.to_account_info(),
-            system_program: ctx.accounts.system_program.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
-        };
-        let init_margin_ctx = CpiContext::new(
-            ctx.accounts.zeta_program.to_account_info(),
-            init_margin_accs,
-        );
-        zeta_abi::cpi::initialize_margin_account(init_margin_ctx)?;
+    pub fn initialize_cross_margin_account_manager(
+        ctx: Context<InitializeCrossMarginAccountManagerAccounts>,
+    ) -> Result<()> {
+        msg!("In abi_wrapper::initialize_cross_margin_account_manager");
+        let init_cross_margin_account_manager_accs =
+            zeta_abi::cpi::accounts::InitializeCrossMarginAccountManager {
+                margin_account: ctx.accounts.margin_account.to_account_info(),
+                authority: ctx.accounts.authority.to_account_info(),
+                payer: ctx.accounts.payer.to_account_info(),
+                zeta_program: ctx.accounts.zeta_program.to_account_info(),
+                system_program: ctx.accounts.system_program.to_account_info(),
+                zeta_group: ctx.accounts.zeta_group.to_account_info(),
+            };
         Ok(())
     }
+
+    // pub fn initialize_margin_account(ctx: Context<InitializeMarginAccounts>) -> Result<()> {
+    //     msg!("In abi_wrapper::initialize_margin_account");
+    //     let init_margin_accs = zeta_abi::cpi::accounts::InitializeMarginAccount {
+    //         margin_account: ctx.accounts.margin_account.to_account_info(),
+    //         authority: ctx.accounts.authority.to_account_info(),
+    //         payer: ctx.accounts.payer.to_account_info(),
+    //         zeta_program: ctx.accounts.zeta_program.to_account_info(),
+    //         system_program: ctx.accounts.system_program.to_account_info(),
+    //         zeta_group: ctx.accounts.zeta_group.to_account_info(),
+    //     };
+    //     let init_margin_ctx = CpiContext::new(
+    //         ctx.accounts.zeta_program.to_account_info(),
+    //         init_margin_accs,
+    //     );
+    //     zeta_abi::cpi::initialize_margin_account(init_margin_ctx)?;
+    //     Ok(())
+    // }
 
     pub fn initialize_open_orders(ctx: Context<InitializeOpenOrdersAccounts>) -> Result<()> {
         let init_open_orders_accs = zeta_abi::cpi::accounts::InitializeOpenOrders {
@@ -311,14 +327,14 @@ pub mod abi_wrapper {
 }
 
 #[derive(Accounts)]
-pub struct InitializeMarginAccounts<'info> {
+pub struct InitializeCrossMarginAccountManagerAccounts<'info> {
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub cross_margin_account_manager: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
+    #[account(mut)]
     pub payer: Signer<'info>,
-    pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
+    pub zeta_program: Program<'info, id::ZetaProgram>,
     pub system_program: Program<'info, System>,
-    pub zeta_group: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]

@@ -3,42 +3,6 @@ export type AbiWrapper = {
   "name": "abi_wrapper",
   "instructions": [
     {
-      "name": "initializeMarginAccount",
-      "accounts": [
-        {
-          "name": "marginAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "payer",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "zetaProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "initializeOpenOrders",
       "accounts": [
         {
@@ -1291,42 +1255,6 @@ export const IDL: AbiWrapper = {
   "version": "0.1.0",
   "name": "abi_wrapper",
   "instructions": [
-    {
-      "name": "initializeMarginAccount",
-      "accounts": [
-        {
-          "name": "marginAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "payer",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "zetaProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
     {
       "name": "initializeOpenOrders",
       "accounts": [
