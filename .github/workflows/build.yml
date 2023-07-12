@@ -56,9 +56,11 @@ jobs:
         shell: bash
         run: |
           npm i -g @project-serum/anchor-cli@v${ANCHOR_VERSION}
-          rustup install 1.70.0
-          rustup default 1.70.0
       - name: Build zeta-abi
         run: cargo build
       - name: Build abi-wrapper
-        run: cd abi-wrapper && anchor build --skip-lint
+        run: |
+          rustup install 1.70.0
+          rustup default 1.70.0
+          rustc --version
+          cd abi-wrapper && anchor build --skip-lint
