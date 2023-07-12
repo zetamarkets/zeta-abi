@@ -15,6 +15,7 @@ pub struct InitializeCrossMarginAccountManager<'info> {
 pub struct CloseCrossMarginAccountManager<'info> {
     #[account(mut)]
     pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
+    #[account(mut)]
     pub authority: Signer<'info>,
 }
 
@@ -45,7 +46,7 @@ pub struct CloseCrossMarginAccount<'info> {
 #[derive(Accounts)]
 pub struct InitializeOpenOrdersV3<'info> {
     pub state: AccountLoader<'info, State>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub system_program: Program<'info, System>,
     #[account(mut)]
     pub open_orders: AccountInfo<'info>,
@@ -69,7 +70,7 @@ pub struct PlacePerpOrderV3<'info> {
     #[account(mut)]
     pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     pub authority: Signer<'info>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub token_program: Program<'info, Token>,
     pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
@@ -78,7 +79,7 @@ pub struct PlacePerpOrderV3<'info> {
     pub market_accounts: MarketAccounts<'info>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub market_mint: Box<Account<'info, Mint>>,
     pub mint_authority: AccountInfo<'info>,
@@ -96,7 +97,7 @@ pub struct DepositV2<'info> {
     #[account(mut)]
     pub user_token_account: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
-    pub socialized_loss_account: Box<Account<'info, SocializedLossAccount>>,
+    pub socialized_loss_account: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
     pub token_program: Program<'info, Token>,
     pub state: AccountLoader<'info, State>,
@@ -119,7 +120,7 @@ pub struct WithdrawV2<'info> {
     pub token_program: Program<'info, Token>,
     pub authority: Signer<'info>,
     #[account(mut)]
-    pub socialized_loss_account: Box<Account<'info, SocializedLossAccount>>,
+    pub socialized_loss_account: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]
@@ -133,7 +134,7 @@ pub struct ForceCancelOrdersV2<'info> {
     pub pricing: AccountLoader<'info, Pricing>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     pub cancel_accounts: CancelAccounts<'info>,
 }
 
@@ -146,7 +147,7 @@ pub struct LiquidateV2<'info> {
     pub pricing: AccountLoader<'info, Pricing>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, cpi::Chainlink>,
+    pub oracle_backup_program: Program<'info, id::Chainlink>,
     pub market: AccountInfo<'info>,
     #[account(mut)]
     pub liquidated_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
@@ -182,7 +183,7 @@ pub struct CancelAccounts<'info> {
     pub state: AccountLoader<'info, State>,
     #[account(mut)]
     pub margin_account: UncheckedAccount<'info>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
     pub open_orders: AccountInfo<'info>,
@@ -201,7 +202,7 @@ pub struct CancelAccounts<'info> {
 pub struct CloseOpenOrdersV3<'info> {
     pub state: AccountLoader<'info, State>,
     pub pricing: AccountLoader<'info, Pricing>,
-    pub dex_program: Program<'info, cpi::Dex>,
+    pub dex_program: Program<'info, id::Dex>,
     #[account(mut)]
     pub open_orders: AccountInfo<'info>,
     #[account(mut)]

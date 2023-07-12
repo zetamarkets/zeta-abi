@@ -15,42 +15,65 @@ pub mod abi_wrapper {
         msg!("In abi_wrapper::initialize_cross_margin_account_manager");
         let init_cross_margin_account_manager_accs =
             zeta_abi::cpi::accounts::InitializeCrossMarginAccountManager {
-                margin_account: ctx.accounts.margin_account.to_account_info(),
+                cross_margin_account_manager: ctx
+                    .accounts
+                    .cross_margin_account_manager
+                    .to_account_info(),
                 authority: ctx.accounts.authority.to_account_info(),
                 payer: ctx.accounts.payer.to_account_info(),
                 zeta_program: ctx.accounts.zeta_program.to_account_info(),
                 system_program: ctx.accounts.system_program.to_account_info(),
-                zeta_group: ctx.accounts.zeta_group.to_account_info(),
             };
+        let init_cross_margin_account_manager_ctx = CpiContext::new(
+            ctx.accounts.zeta_program.to_account_info(),
+            init_cross_margin_account_manager_accs,
+        );
+        zeta_abi::cpi::initialize_cross_margin_account_manager(
+            init_cross_margin_account_manager_ctx,
+        )?;
+
         Ok(())
     }
 
-    // pub fn initialize_margin_account(ctx: Context<InitializeMarginAccounts>) -> Result<()> {
-    //     msg!("In abi_wrapper::initialize_margin_account");
-    //     let init_margin_accs = zeta_abi::cpi::accounts::InitializeMarginAccount {
-    //         margin_account: ctx.accounts.margin_account.to_account_info(),
-    //         authority: ctx.accounts.authority.to_account_info(),
-    //         payer: ctx.accounts.payer.to_account_info(),
-    //         zeta_program: ctx.accounts.zeta_program.to_account_info(),
-    //         system_program: ctx.accounts.system_program.to_account_info(),
-    //         zeta_group: ctx.accounts.zeta_group.to_account_info(),
-    //     };
-    //     let init_margin_ctx = CpiContext::new(
-    //         ctx.accounts.zeta_program.to_account_info(),
-    //         init_margin_accs,
-    //     );
-    //     zeta_abi::cpi::initialize_margin_account(init_margin_ctx)?;
-    //     Ok(())
-    // }
+    pub fn initialize_cross_margin_account(
+        ctx: Context<InitializeCrossMarginAccounts>,
+        subaccount_index: u8,
+    ) -> Result<()> {
+        msg!("In abi_wrapper::initialize_cross_margin_account");
+        let init_cross_margin_account_accs =
+            zeta_abi::cpi::accounts::InitializeCrossMarginAccount {
+                cross_margin_account: ctx.accounts.cross_margin_account.to_account_info(),
+                cross_margin_account_manager: ctx
+                    .accounts
+                    .cross_margin_account_manager
+                    .to_account_info(),
+                authority: ctx.accounts.authority.to_account_info(),
+                payer: ctx.accounts.payer.to_account_info(),
+                zeta_program: ctx.accounts.zeta_program.to_account_info(),
+                system_program: ctx.accounts.system_program.to_account_info(),
+            };
+        let init_cross_margin_account_ctx = CpiContext::new(
+            ctx.accounts.zeta_program.to_account_info(),
+            init_cross_margin_account_accs,
+        );
+        zeta_abi::cpi::initialize_cross_margin_account(
+            init_cross_margin_account_ctx,
+            subaccount_index,
+        )?;
 
-    pub fn initialize_open_orders(ctx: Context<InitializeOpenOrdersAccounts>) -> Result<()> {
-        let init_open_orders_accs = zeta_abi::cpi::accounts::InitializeOpenOrders {
+        Ok(())
+    }
+
+    pub fn initialize_open_orders_v3(
+        ctx: Context<InitializeOpenOrdersAccounts>,
+        asset: Asset,
+    ) -> Result<()> {
+        let init_open_orders_accs = zeta_abi::cpi::accounts::InitializeOpenOrdersV3 {
             state: ctx.accounts.state.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
             dex_program: ctx.accounts.dex_program.to_account_info(),
             system_program: ctx.accounts.system_program.to_account_info(),
             open_orders: ctx.accounts.open_orders.to_account_info(),
-            margin_account: ctx.accounts.margin_account.to_account_info(),
+            cross_margin_account: ctx.accounts.cross_margin_account.to_account_info(),
             authority: ctx.accounts.authority.to_account_info(),
             payer: ctx.accounts.payer.to_account_info(),
             market: ctx.accounts.market.to_account_info(),
@@ -62,13 +85,12 @@ pub mod abi_wrapper {
             ctx.accounts.zeta_program.to_account_info(),
             init_open_orders_accs,
         );
-        zeta_abi::cpi::initialize_open_orders(init_open_orders_ctx)?;
+        zeta_abi::cpi::initialize_open_orders_v3(init_open_orders_ctx, asset.into())?;
         Ok(())
     }
 
-    pub fn deposit(ctx: Context<DepositAccounts>, amount: u64) -> Result<()> {
-        let deposit_accs = zeta_abi::cpi::accounts::Deposit {
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
+    pub fn deposit_v2(ctx: Context<DepositAccounts>, amount: u64) -> Result<()> {
+        let deposit_accs = zeta_abi::cpi::accounts::DepositV2 {
             margin_account: ctx.accounts.margin_account.to_account_info(),
             vault: ctx.accounts.vault.to_account_info(),
             user_token_account: ctx.accounts.user_token_account.to_account_info(),
@@ -76,82 +98,32 @@ pub mod abi_wrapper {
             authority: ctx.accounts.authority.to_account_info(),
             token_program: ctx.accounts.token_program.to_account_info(),
             state: ctx.accounts.state.to_account_info(),
-            greeks: ctx.accounts.greeks.to_account_info(),
+            pricing: ctx.accounts.pricing.to_account_info(),
         };
         let deposit_ctx =
             CpiContext::new(ctx.accounts.zeta_program.to_account_info(), deposit_accs);
-        zeta_abi::cpi::deposit(deposit_ctx, amount)?;
+        zeta_abi::cpi::deposit_v2(deposit_ctx, amount)?;
         Ok(())
     }
 
-    pub fn withdraw(ctx: Context<WithdrawAccounts>, amount: u64) -> Result<()> {
-        let withdraw_accs = zeta_abi::cpi::accounts::Withdraw {
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
-            margin_account: ctx.accounts.margin_account.to_account_info(),
-            vault: ctx.accounts.vault.to_account_info(),
-            user_token_account: ctx.accounts.user_token_account.to_account_info(),
-            socialized_loss_account: ctx.accounts.socialized_loss_account.to_account_info(),
-            authority: ctx.accounts.authority.to_account_info(),
-            token_program: ctx.accounts.token_program.to_account_info(),
+    pub fn withdraw_v2(ctx: Context<WithdrawAccounts>, amount: u64) -> Result<()> {
+        let withdraw_accs = zeta_abi::cpi::accounts::WithdrawV2 {
             state: ctx.accounts.state.to_account_info(),
-            oracle: ctx.accounts.oracle.to_account_info(),
-            greeks: ctx.accounts.greeks.to_account_info(),
-            oracle_backup_feed: ctx.accounts.oracle_backup_feed.to_account_info(),
-            oracle_backup_program: ctx.accounts.oracle_backup_program.to_account_info(),
+            pricing: ctx.accounts.pricing.to_account_info(),
+            vault: ctx.accounts.vault.to_account_info(),
+            margin_account: ctx.accounts.margin_account.to_account_info(),
+            user_token_account: ctx.accounts.user_token_account.to_account_info(),
+            token_program: ctx.accounts.token_program.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+            socialized_loss_account: ctx.accounts.socialized_loss_account.to_account_info(),
         };
         let withdraw_ctx =
             CpiContext::new(ctx.accounts.zeta_program.to_account_info(), withdraw_accs);
-        zeta_abi::cpi::withdraw(withdraw_ctx, amount)?;
+        zeta_abi::cpi::withdraw_v2(withdraw_ctx, amount)?;
         Ok(())
     }
 
-    pub fn place_order_v4(
-        ctx: Context<PlaceOrderAccounts>,
-        price: u64,
-        size: u64,
-        side: Side,
-        order_type: OrderType,
-        client_order_id: Option<u64>,
-        tag: Option<String>,
-        tif_offset: Option<u16>,
-    ) -> Result<()> {
-        let place_order_accs = zeta_abi::cpi::accounts::PlaceOrder {
-            state: ctx.accounts.state.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
-            margin_account: ctx.accounts.margin_account.to_account_info(),
-            authority: ctx.accounts.authority.to_account_info(),
-            dex_program: ctx.accounts.dex_program.to_account_info(),
-            token_program: ctx.accounts.token_program.to_account_info(),
-            serum_authority: ctx.accounts.serum_authority.to_account_info(),
-            greeks: ctx.accounts.greeks.to_account_info(),
-            open_orders: ctx.accounts.open_orders.to_account_info(),
-            rent: ctx.accounts.rent.to_account_info(),
-            market_accounts: market_accs!(ctx),
-            oracle: ctx.accounts.oracle.to_account_info(),
-            oracle_backup_feed: ctx.accounts.oracle_backup_feed.to_account_info(),
-            oracle_backup_program: ctx.accounts.oracle_backup_program.to_account_info(),
-            market_node: ctx.accounts.market_node.to_account_info(),
-            market_mint: ctx.accounts.market_mint.to_account_info(),
-            mint_authority: ctx.accounts.mint_authority.to_account_info(),
-        };
-        let place_order_ctx = CpiContext::new(
-            ctx.accounts.zeta_program.to_account_info(),
-            place_order_accs,
-        );
-        zeta_abi::cpi::place_order_v4(
-            place_order_ctx,
-            price,
-            size,
-            side.into(),
-            order_type.into(),
-            client_order_id,
-            tag,
-            tif_offset,
-        )?;
-        Ok(())
-    }
-
-    pub fn place_perp_order_v2(
+    pub fn place_perp_order_v3(
         ctx: Context<PlacePerpOrderAccounts>,
         price: u64,
         size: u64,
@@ -160,16 +132,16 @@ pub mod abi_wrapper {
         client_order_id: Option<u64>,
         tag: Option<String>,
         tif_offset: Option<u16>,
+        asset: Asset,
     ) -> Result<()> {
-        let place_perp_order_accs = zeta_abi::cpi::accounts::PlacePerpOrder {
+        let place_perp_order_accs = zeta_abi::cpi::accounts::PlacePerpOrderV3 {
             state: ctx.accounts.state.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
+            pricing: ctx.accounts.pricing.to_account_info(),
             margin_account: ctx.accounts.margin_account.to_account_info(),
             authority: ctx.accounts.authority.to_account_info(),
             dex_program: ctx.accounts.dex_program.to_account_info(),
             token_program: ctx.accounts.token_program.to_account_info(),
             serum_authority: ctx.accounts.serum_authority.to_account_info(),
-            greeks: ctx.accounts.greeks.to_account_info(),
             open_orders: ctx.accounts.open_orders.to_account_info(),
             rent: ctx.accounts.rent.to_account_info(),
             oracle: ctx.accounts.oracle.to_account_info(),
@@ -184,7 +156,7 @@ pub mod abi_wrapper {
             ctx.accounts.zeta_program.to_account_info(),
             place_perp_order_accs,
         );
-        zeta_abi::cpi::place_perp_order_v2(
+        zeta_abi::cpi::place_perp_order_v3(
             place_perp_order_ctx,
             price,
             size,
@@ -193,6 +165,7 @@ pub mod abi_wrapper {
             client_order_id,
             tag,
             tif_offset,
+            asset.into(),
         )?;
         Ok(())
     }
@@ -201,12 +174,13 @@ pub mod abi_wrapper {
         ctx: Context<CancelOrderAccounts>,
         side: Side,
         order_id: u128,
+        asset: Asset,
     ) -> Result<()> {
         let cancel_order_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             cancel_order_accs!(ctx.accounts),
         );
-        zeta_abi::cpi::cancel_order(cancel_order_ctx, side.into(), order_id)?;
+        zeta_abi::cpi::cancel_order(cancel_order_ctx, side.into(), order_id, asset.into())?;
         Ok(())
     }
 
@@ -214,51 +188,70 @@ pub mod abi_wrapper {
         ctx: Context<CancelOrderAccounts>,
         side: Side,
         order_id: u128,
+        asset: Asset,
     ) -> Result<()> {
         let cancel_order_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             cancel_order_accs!(ctx.accounts),
         );
-        zeta_abi::cpi::cancel_order_no_error(cancel_order_ctx, side.into(), order_id)?;
+        zeta_abi::cpi::cancel_order_no_error(
+            cancel_order_ctx,
+            side.into(),
+            order_id,
+            asset.into(),
+        )?;
         Ok(())
     }
 
-    pub fn cancel_all_market_orders(ctx: Context<CancelOrderAccounts>) -> Result<()> {
+    pub fn cancel_all_market_orders(ctx: Context<CancelOrderAccounts>, asset: Asset) -> Result<()> {
         let cancel_order_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             cancel_order_accs!(ctx.accounts),
         );
-        zeta_abi::cpi::cancel_all_market_orders(cancel_order_ctx)?;
+        zeta_abi::cpi::cancel_all_market_orders(cancel_order_ctx, asset.into())?;
         Ok(())
     }
 
     pub fn cancel_order_by_client_order_id(
         ctx: Context<CancelOrderAccounts>,
         client_order_id: u64,
+        asset: Asset,
     ) -> Result<()> {
         let cancel_order_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             cancel_order_accs!(ctx.accounts),
         );
-        zeta_abi::cpi::cancel_order_by_client_order_id(cancel_order_ctx, client_order_id)?;
+        zeta_abi::cpi::cancel_order_by_client_order_id(
+            cancel_order_ctx,
+            client_order_id,
+            asset.into(),
+        )?;
         Ok(())
     }
 
     pub fn cancel_order_by_client_order_id_no_error(
         ctx: Context<CancelOrderAccounts>,
         client_order_id: u64,
+        asset: Asset,
     ) -> Result<()> {
         let cancel_order_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             cancel_order_accs!(ctx.accounts),
         );
-        zeta_abi::cpi::cancel_order_by_client_order_id_no_error(cancel_order_ctx, client_order_id)?;
+        zeta_abi::cpi::cancel_order_by_client_order_id_no_error(
+            cancel_order_ctx,
+            client_order_id,
+            asset.into(),
+        )?;
         Ok(())
     }
 
-    pub fn force_cancel_orders(ctx: Context<ForceCancelOrdersAccounts>) -> Result<()> {
-        let force_cancel_order_accs = zeta_abi::cpi::accounts::ForceCancelOrders {
-            greeks: ctx.accounts.greeks.to_account_info(),
+    pub fn force_cancel_orders_v2(
+        ctx: Context<ForceCancelOrdersAccounts>,
+        asset: Asset,
+    ) -> Result<()> {
+        let force_cancel_order_accs = zeta_abi::cpi::accounts::ForceCancelOrdersV2 {
+            pricing: ctx.accounts.pricing.to_account_info(),
             oracle: ctx.accounts.oracle.to_account_info(),
             oracle_backup_feed: ctx.accounts.oracle_backup_feed.to_account_info(),
             oracle_backup_program: ctx.accounts.oracle_backup_program.to_account_info(),
@@ -268,31 +261,60 @@ pub mod abi_wrapper {
             ctx.accounts.zeta_program.to_account_info(),
             force_cancel_order_accs,
         );
-        zeta_abi::cpi::force_cancel_orders(force_cancel_order_ctx)?;
+        zeta_abi::cpi::force_cancel_orders_v2(force_cancel_order_ctx, asset.into())?;
         Ok(())
     }
 
-    pub fn close_margin(ctx: Context<CloseMarginAccounts>) -> Result<()> {
-        let close_margin_account_accs = zeta_abi::cpi::accounts::CloseMarginAccount {
-            margin_account: ctx.accounts.margin_account.to_account_info(),
+    pub fn close_cross_margin(
+        ctx: Context<CloseCrossMarginAccounts>,
+        subaccount_index: u8,
+    ) -> Result<()> {
+        let close_margin_account_accs = zeta_abi::cpi::accounts::CloseCrossMarginAccount {
+            cross_margin_account: ctx.accounts.cross_margin_account.to_account_info(),
+            cross_margin_account_manager: ctx
+                .accounts
+                .cross_margin_account_manager
+                .to_account_info(),
             authority: ctx.accounts.authority.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
         };
         let close_margin_account_ctx = CpiContext::new(
             ctx.accounts.zeta_program.to_account_info(),
             close_margin_account_accs,
         );
-        zeta_abi::cpi::close_margin_account(close_margin_account_ctx)?;
+        zeta_abi::cpi::close_cross_margin_account(close_margin_account_ctx, subaccount_index)?;
         Ok(())
     }
 
-    pub fn close_open_orders(ctx: Context<CloseOpenOrdersAccounts>, map_nonce: u8) -> Result<()> {
-        let close_open_orders_accs = zeta_abi::cpi::accounts::CloseOpenOrders {
+    pub fn close_cross_margin_manager(
+        ctx: Context<CloseCrossMarginAccountManagerAccounts>,
+    ) -> Result<()> {
+        let close_margin_account_manager_accs =
+            zeta_abi::cpi::accounts::CloseCrossMarginAccountManager {
+                cross_margin_account_manager: ctx
+                    .accounts
+                    .cross_margin_account_manager
+                    .to_account_info(),
+                authority: ctx.accounts.authority.to_account_info(),
+            };
+        let close_margin_account_manager_ctx = CpiContext::new(
+            ctx.accounts.zeta_program.to_account_info(),
+            close_margin_account_manager_accs,
+        );
+        zeta_abi::cpi::close_cross_margin_account_manager(close_margin_account_manager_ctx)?;
+        Ok(())
+    }
+
+    pub fn close_open_orders_v3(
+        ctx: Context<CloseOpenOrdersAccounts>,
+        map_nonce: u8,
+        asset: Asset,
+    ) -> Result<()> {
+        let close_open_orders_accs = zeta_abi::cpi::accounts::CloseOpenOrdersV3 {
             state: ctx.accounts.state.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
+            pricing: ctx.accounts.pricing.to_account_info(),
             dex_program: ctx.accounts.dex_program.to_account_info(),
             open_orders: ctx.accounts.open_orders.to_account_info(),
-            margin_account: ctx.accounts.margin_account.to_account_info(),
+            cross_margin_account: ctx.accounts.cross_margin_account.to_account_info(),
             authority: ctx.accounts.authority.to_account_info(),
             market: ctx.accounts.market.to_account_info(),
             serum_authority: ctx.accounts.serum_authority.to_account_info(),
@@ -302,26 +324,25 @@ pub mod abi_wrapper {
             ctx.accounts.zeta_program.to_account_info(),
             close_open_orders_accs,
         );
-        zeta_abi::cpi::close_open_orders(close_open_orders_ctx, map_nonce)?;
+        zeta_abi::cpi::close_open_orders_v3(close_open_orders_ctx, map_nonce, asset.into())?;
         Ok(())
     }
 
-    pub fn liquidate(ctx: Context<LiquidateAccounts>, amount: u64) -> Result<()> {
-        let liquidate_accs = zeta_abi::cpi::accounts::Liquidate {
+    pub fn liquidate_v2(ctx: Context<LiquidateAccounts>, amount: u64, asset: Asset) -> Result<()> {
+        let liquidate_accs = zeta_abi::cpi::accounts::LiquidateV2 {
             state: ctx.accounts.state.to_account_info(),
             liquidator: ctx.accounts.liquidator.to_account_info(),
-            liquidator_margin_account: ctx.accounts.liquidator_margin_account.to_account_info(),
-            greeks: ctx.accounts.greeks.to_account_info(),
+            liquidator_account: ctx.accounts.liquidator_account.to_account_info(),
+            pricing: ctx.accounts.pricing.to_account_info(),
             oracle: ctx.accounts.oracle.to_account_info(),
             oracle_backup_feed: ctx.accounts.oracle_backup_feed.to_account_info(),
             oracle_backup_program: ctx.accounts.oracle_backup_program.to_account_info(),
             market: ctx.accounts.market.to_account_info(),
-            zeta_group: ctx.accounts.zeta_group.to_account_info(),
-            liquidated_margin_account: ctx.accounts.liquidated_margin_account.to_account_info(),
+            liquidated_account: ctx.accounts.liquidated_account.to_account_info(),
         };
         let liquidate_ctx =
             CpiContext::new(ctx.accounts.zeta_program.to_account_info(), liquidate_accs);
-        zeta_abi::cpi::liquidate(liquidate_ctx, amount)?;
+        zeta_abi::cpi::liquidate_v2(liquidate_ctx, amount, asset.into())?;
         Ok(())
     }
 }
@@ -338,15 +359,27 @@ pub struct InitializeCrossMarginAccountManagerAccounts<'info> {
 }
 
 #[derive(Accounts)]
+pub struct InitializeCrossMarginAccounts<'info> {
+    #[account(mut)]
+    pub cross_margin_account: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub cross_margin_account_manager: UncheckedAccount<'info>,
+    pub authority: Signer<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub zeta_program: Program<'info, id::ZetaProgram>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct InitializeOpenOrdersAccounts<'info> {
     pub state: UncheckedAccount<'info>,
-    pub zeta_group: UncheckedAccount<'info>,
     pub dex_program: Program<'info, id::Dex>,
     pub system_program: Program<'info, System>,
     #[account(mut)]
     pub open_orders: UncheckedAccount<'info>,
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub cross_margin_account: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
     pub payer: Signer<'info>,
     #[account(mut)]
@@ -360,93 +393,62 @@ pub struct InitializeOpenOrdersAccounts<'info> {
 
 #[derive(Accounts)]
 pub struct DepositAccounts<'info> {
-    pub zeta_group: UncheckedAccount<'info>,
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     #[account(mut)]
-    pub vault: UncheckedAccount<'info>,
+    pub vault: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
-    pub user_token_account: UncheckedAccount<'info>,
+    pub user_token_account: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
     pub socialized_loss_account: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
     pub token_program: Program<'info, Token>,
-    pub state: UncheckedAccount<'info>,
-    pub greeks: UncheckedAccount<'info>,
+    pub state: AccountLoader<'info, State>,
+    #[account(mut)]
+    pub pricing: AccountLoader<'info, Pricing>,
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
 #[derive(Accounts)]
 pub struct WithdrawAccounts<'info> {
-    pub zeta_group: UncheckedAccount<'info>,
+    pub state: AccountLoader<'info, State>,
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub pricing: AccountLoader<'info, Pricing>,
     #[account(mut)]
-    pub vault: UncheckedAccount<'info>,
+    pub vault: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
-    pub user_token_account: UncheckedAccount<'info>,
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
+    #[account(mut)]
+    pub user_token_account: Box<Account<'info, TokenAccount>>,
+    pub token_program: Program<'info, Token>,
+    pub authority: Signer<'info>,
     #[account(mut)]
     pub socialized_loss_account: UncheckedAccount<'info>,
-    pub authority: Signer<'info>,
-    pub token_program: Program<'info, Token>,
-    pub state: UncheckedAccount<'info>,
-    pub greeks: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
-    pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
-}
-
-#[derive(Accounts)]
-pub struct PlaceOrderAccounts<'info> {
-    pub state: UncheckedAccount<'info>,
-    pub zeta_group: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
-    pub authority: Signer<'info>,
-    pub dex_program: Program<'info, id::Dex>,
-    pub token_program: Program<'info, Token>,
-    pub serum_authority: UncheckedAccount<'info>,
-    pub greeks: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
-    pub rent: UncheckedAccount<'info>,
-    pub market_accounts: MarketAccounts<'info>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
-    #[account(mut)]
-    pub market_node: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub market_mint: Box<Account<'info, Mint>>,
-    pub mint_authority: UncheckedAccount<'info>,
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
 #[derive(Accounts)]
 pub struct PlacePerpOrderAccounts<'info> {
-    pub state: UncheckedAccount<'info>,
-    pub zeta_group: UncheckedAccount<'info>,
+    pub state: AccountLoader<'info, State>,
+    pub pricing: AccountLoader<'info, Pricing>,
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     pub authority: Signer<'info>,
     pub dex_program: Program<'info, id::Dex>,
     pub token_program: Program<'info, Token>,
-    pub serum_authority: UncheckedAccount<'info>,
-    pub greeks: UncheckedAccount<'info>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
-    pub rent: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
+    pub rent: Sysvar<'info, Rent>,
     pub market_accounts: MarketAccounts<'info>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub oracle: AccountInfo<'info>,
+    pub oracle_backup_feed: AccountInfo<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub market_mint: Box<Account<'info, Mint>>,
-    pub mint_authority: UncheckedAccount<'info>,
+    pub mint_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub perp_sync_queue: UncheckedAccount<'info>,
+    pub perp_sync_queue: AccountLoader<'info, PerpSyncQueue>,
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
@@ -459,7 +461,7 @@ pub struct CancelOrderAccounts<'info> {
 
 #[derive(Accounts)]
 pub struct ForceCancelOrdersAccounts<'info> {
-    pub greeks: UncheckedAccount<'info>,
+    pub pricing: AccountLoader<'info, Pricing>,
     pub oracle: UncheckedAccount<'info>,
     pub oracle_backup_feed: UncheckedAccount<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
@@ -468,32 +470,41 @@ pub struct ForceCancelOrdersAccounts<'info> {
 }
 
 #[derive(Accounts)]
-pub struct CloseMarginAccounts<'info> {
+pub struct CloseCrossMarginAccountManagerAccounts<'info> {
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
     #[account(mut)]
     pub authority: Signer<'info>,
+    pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
+}
+
+#[derive(Accounts)]
+pub struct CloseCrossMarginAccounts<'info> {
     #[account(mut)]
-    pub zeta_group: UncheckedAccount<'info>,
+    pub cross_margin_account: AccountLoader<'info, CrossMarginAccount>,
+    #[account(mut)]
+    pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
 #[derive(Accounts)]
 pub struct CloseOpenOrdersAccounts<'info> {
     pub state: AccountLoader<'info, State>,
-    pub zeta_group: UncheckedAccount<'info>,
-    pub dex_program: Program<'info, zeta_abi::id::Dex>,
+    pub pricing: AccountLoader<'info, Pricing>,
+    pub dex_program: Program<'info, id::Dex>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub cross_margin_account: AccountLoader<'info, CrossMarginAccount>,
+    // Marked mutable since it is receiving lamports
     #[account(mut)]
     pub authority: Signer<'info>,
-    pub market: UncheckedAccount<'info>,
+    pub market: AccountInfo<'info>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub serum_authority: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub open_orders_map: UncheckedAccount<'info>,
+    pub open_orders_map: Box<Account<'info, CrossOpenOrdersMap>>,
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
@@ -502,15 +513,14 @@ pub struct LiquidateAccounts<'info> {
     pub state: AccountLoader<'info, State>,
     pub liquidator: Signer<'info>,
     #[account(mut)]
-    pub liquidator_margin_account: AccountLoader<'info, MarginAccount>,
-    pub greeks: AccountLoader<'info, Greeks>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub liquidator_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
+    pub pricing: AccountLoader<'info, Pricing>,
+    pub oracle: AccountInfo<'info>,
+    pub oracle_backup_feed: AccountInfo<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
-    pub market: UncheckedAccount<'info>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub market: AccountInfo<'info>,
     #[account(mut)]
-    pub liquidated_margin_account: AccountLoader<'info, MarginAccount>,
+    pub liquidated_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     pub zeta_program: Program<'info, zeta_abi::id::ZetaProgram>,
 }
 
@@ -540,22 +550,21 @@ pub struct MarketAccounts<'info> {
 
 #[derive(Accounts)]
 pub struct CancelAccounts<'info> {
-    pub zeta_group: UncheckedAccount<'info>,
-    pub state: UncheckedAccount<'info>,
+    pub state: AccountLoader<'info, State>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub margin_account: UncheckedAccount<'info>,
     pub dex_program: Program<'info, id::Dex>,
-    pub serum_authority: UncheckedAccount<'info>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     #[account(mut)]
-    pub market: UncheckedAccount<'info>,
+    pub market: AccountInfo<'info>,
     #[account(mut)]
-    pub bids: UncheckedAccount<'info>,
+    pub bids: AccountInfo<'info>,
     #[account(mut)]
-    pub asks: UncheckedAccount<'info>,
+    pub asks: AccountInfo<'info>,
     #[account(mut)]
-    pub event_queue: UncheckedAccount<'info>,
+    pub event_queue: AccountInfo<'info>,
 }
 
 #[macro_export]
@@ -572,7 +581,6 @@ macro_rules! cancel_order_accs {
 macro_rules! cancel_accs {
     ($cancel_accs:expr) => {
         zeta_abi::cpi::accounts::CancelAccounts {
-            zeta_group: $cancel_accs.zeta_group.to_account_info(),
             state: $cancel_accs.state.to_account_info(),
             margin_account: $cancel_accs.margin_account.to_account_info(),
             dex_program: $cancel_accs.dex_program.to_account_info(),
@@ -627,6 +635,30 @@ impl From<Side> for zeta_abi::Side {
             Side::Uninitialized => zeta_abi::Side::Uninitialized,
             Side::Bid => zeta_abi::Side::Bid,
             Side::Ask => zeta_abi::Side::Ask,
+        }
+    }
+}
+
+#[repr(u8)]
+#[derive(AnchorSerialize, AnchorDeserialize, PartialEq, Eq, Clone, Copy)]
+pub enum Asset {
+    SOL = 0,
+    BTC = 1,
+    ETH = 2,
+    APT = 3,
+    ARB = 4,
+    UNDEFINED = 255,
+}
+
+impl From<Asset> for zeta_abi::Asset {
+    fn from(value: Asset) -> zeta_abi::Asset {
+        match value {
+            Asset::SOL => zeta_abi::Asset::SOL,
+            Asset::BTC => zeta_abi::Asset::BTC,
+            Asset::ETH => zeta_abi::Asset::ETH,
+            Asset::APT => zeta_abi::Asset::APT,
+            Asset::ARB => zeta_abi::Asset::ARB,
+            Asset::UNDEFINED => zeta_abi::Asset::UNDEFINED,
         }
     }
 }

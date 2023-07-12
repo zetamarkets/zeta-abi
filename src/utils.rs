@@ -6,10 +6,10 @@ use crate::*;
 // would just return percentage * 10^N, where N = 2 = percentage precision.....
 pub fn get_initial_margin_per_lot(
     spot: u64,
-    strike: u64,
-    mark: u64,
+    _strike: u64,
+    _mark: u64,
     product: Kind,
-    side: Side,
+    _side: Side,
     margin_parameters: &MarginParameters,
 ) -> Result<u64> {
     if product != Kind::Perp {
@@ -28,10 +28,10 @@ pub fn get_initial_margin_per_lot(
 /// Maintenance margin for single product
 pub fn get_maintenance_margin_per_lot(
     spot: u64,
-    strike: u64,
-    mark: u64,
+    _strike: u64,
+    _mark: u64,
     product: Kind,
-    long: bool,
+    _long: bool,
     margin_parameters: &MarginParameters,
 ) -> Result<u64> {
     if product != Kind::Perp {
