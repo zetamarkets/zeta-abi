@@ -60,7 +60,7 @@ jobs:
         run: cargo build
       - name: Build abi-wrapper
         run: |
-          rustup install 1.70.0
-          rustup default 1.70.0
+          rustup install 1.67.1
+          rustup default 1.67.1
           rustc --version
           cd abi-wrapper && anchor build --skip-lint
