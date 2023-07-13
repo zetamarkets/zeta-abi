@@ -15,4 +15,16 @@ cpi = ["no-entrypoint"]
 [dependencies]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
+solana-program = "1.13.5"
+spl-token = { version = "3.1.1", features = ["no-entrypoint"] }
+bytemuck = { version = "1.4.0" }
+arrayref = "0.3.6"
+rust_decimal = { git = "https://github.com/zetamarkets/rust-decimal.git", features = ["maths"] }
+rust_decimal_macros = "0.10.0"
+superslice = "1.0.0"
+rstest = "0.12.0"
+pyth-sdk-solana = "0.7.0"
+chainlink_solana = "1.0.0"
+strum = "0.24"
+strum_macros = "0.24"
 zeta-abi = { path = "../" }
