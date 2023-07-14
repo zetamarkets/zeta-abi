@@ -25,7 +25,7 @@ This repository contains the Zeta Cross Program Invocation (CPI) interface as we
 
 ```toml
 # Add to dependencies
-zeta-abi = "0.1.1"
+zeta-abi = "1.0.0"
 ```
 
 ## Cross Program Invocations
@@ -39,35 +39,33 @@ zeta-abi = "0.1.1"
 
 The instructions currently supported are as follows:
 
-- `initialize_margin_account` - create and initialize a user's margin account
-- `initialize_open_orders` - create and initialize user's open orders account
-- `deposit` - deposit USDC collateral into the margin account
-- `withdraw` - withdraw USDC collateral from the margin account
-- `place_order_v4` - place a futures order of (price, size, side) on the relevant market
-- `place_perp_order_v2` - place a perp order of (price, size, side) on the relevant market
+- `initialize_cross_margin_account` - create and initialize a user's margin account
+- `initialize_cross_margin_account_manager` - create and initialize a user's margin account manager
+- `initialize_open_orders_v3` - create and initialize user's open orders account
+- `deposit_v2` - deposit USDC collateral into the margin account
+- `withdraw_v2` - withdraw USDC collateral from the margin account
+- `place_perp_order_v3` - place a perp order of (price, size, side) on the relevant market
 - `cancel_order_xxx` - collection of order cancellation functions, by orderId, clientOrderId, market, etc
 - `close_open_orders` - close open orders account
-- `liquidate` - trigger liquidation
+- `liquidate_v2` - trigger liquidation
 
 ### Accounts
 
 The accounts and relevant data that is currently supported (non-exhaustive):
 
-- `ZetaGroup` - contains information relating to all derivatives market for an underlying
-  - Underlying
-  - Serum Market
-  - Strike
-  - Kind (Call, Put, Future)
-  - Expiry
-- `Greeks`
-  - Mark Price
-  - Delta
-  - Vega
-  - IV
-- `MarginAccount`
+- `State` - contains global parameters relating to all markets
+  - Fee percentages
+  - Admin pubkeys
+  - Platform limits
+  - Halt state
+- `Pricing` - global mark prices, pricing params and funding information
+  - Mark Prices
+  - Funding rates
+  - Perp and margin params
+- `CrossMarginAccount` - individual user margin accounts
   - Balance
   - Positions
-  - helper functions: get_initial_margin(), get_maintenance_margin(), get_unrealized_pnl()
+  - Orders
 
 ## Programs
 
