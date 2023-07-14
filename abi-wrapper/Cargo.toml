@@ -3,7 +3,7 @@ crate-type = ["cdylib", "lib"]
 
 [package]
 name = "abi-wrapper"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
 [features]
@@ -15,4 +15,5 @@ cpi = ["no-entrypoint"]
 [dependencies]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
-zeta-abi = "0.1.1"
+solana-program = "1.13.5"
+zeta-abi = { path = "../" }

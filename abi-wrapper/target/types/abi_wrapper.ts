@@ -1,12 +1,12 @@
 export type AbiWrapper = {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "name": "abi_wrapper",
   "instructions": [
     {
-      "name": "initializeMarginAccount",
+      "name": "initializeCrossMarginAccountManager",
       "accounts": [
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
         },
@@ -17,7 +17,7 @@ export type AbiWrapper = {
         },
         {
           "name": "payer",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -29,25 +29,56 @@ export type AbiWrapper = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
         }
       ],
       "args": []
     },
     {
-      "name": "initializeOpenOrders",
+      "name": "initializeCrossMarginAccount",
       "accounts": [
         {
-          "name": "state",
+          "name": "crossMarginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "crossMarginAccountManager",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "zetaProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "subaccountIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initializeOpenOrdersV3",
+      "accounts": [
+        {
+          "name": "state",
           "isMut": false,
           "isSigner": false
         },
@@ -67,7 +98,7 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -107,16 +138,18 @@ export type AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
-      "name": "deposit",
+      "name": "depositV2",
       "accounts": [
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
         {
           "name": "marginAccount",
           "isMut": true,
@@ -153,8 +186,8 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "greeks",
-          "isMut": false,
+          "name": "pricing",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -171,15 +204,15 @@ export type AbiWrapper = {
       ]
     },
     {
-      "name": "withdraw",
+      "name": "withdrawV2",
       "accounts": [
         {
-          "name": "zetaGroup",
+          "name": "state",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "pricing",
           "isMut": true,
           "isSigner": false
         },
@@ -189,13 +222,18 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
+          "name": "marginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userTokenAccount",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "socializedLossAccount",
-          "isMut": true,
+          "name": "tokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -204,33 +242,8 @@ export type AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "state",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracle",
+          "name": "socializedLossAccount",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupFeed",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupProgram",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -247,7 +260,7 @@ export type AbiWrapper = {
       ]
     },
     {
-      "name": "placeOrderV4",
+      "name": "placePerpOrderV3",
       "accounts": [
         {
           "name": "state",
@@ -255,7 +268,7 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -281,196 +294,6 @@ export type AbiWrapper = {
         },
         {
           "name": "serumAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "openOrders",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marketAccounts",
-          "accounts": [
-            {
-              "name": "market",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "requestQueue",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "eventQueue",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "bids",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "asks",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "orderPayerTokenAccount",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "coinVault",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "pcVault",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "coinWallet",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "pcWallet",
-              "isMut": true,
-              "isSigner": false
-            }
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupFeed",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marketNode",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "marketMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "price",
-          "type": "u64"
-        },
-        {
-          "name": "size",
-          "type": "u64"
-        },
-        {
-          "name": "side",
-          "type": {
-            "defined": "Side"
-          }
-        },
-        {
-          "name": "orderType",
-          "type": {
-            "defined": "OrderType"
-          }
-        },
-        {
-          "name": "clientOrderId",
-          "type": {
-            "option": "u64"
-          }
-        },
-        {
-          "name": "tag",
-          "type": {
-            "option": "string"
-          }
-        },
-        {
-          "name": "tifOffset",
-          "type": {
-            "option": "u16"
-          }
-        }
-      ]
-    },
-    {
-      "name": "placePerpOrderV2",
-      "accounts": [
-        {
-          "name": "state",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marginAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "dexProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "serumAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
           "isMut": false,
           "isSigner": false
         },
@@ -613,6 +436,12 @@ export type AbiWrapper = {
           "type": {
             "option": "u16"
           }
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -628,11 +457,6 @@ export type AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -695,6 +519,12 @@ export type AbiWrapper = {
         {
           "name": "orderId",
           "type": "u128"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -710,11 +540,6 @@ export type AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -777,6 +602,12 @@ export type AbiWrapper = {
         {
           "name": "orderId",
           "type": "u128"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -792,11 +623,6 @@ export type AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -849,7 +675,14 @@ export type AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
       "name": "cancelOrderByClientOrderId",
@@ -862,11 +695,6 @@ export type AbiWrapper = {
         {
           "name": "cancelAccounts",
           "accounts": [
-            {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
             {
               "name": "state",
               "isMut": false,
@@ -924,6 +752,12 @@ export type AbiWrapper = {
         {
           "name": "clientOrderId",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -939,11 +773,6 @@ export type AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -1000,14 +829,20 @@ export type AbiWrapper = {
         {
           "name": "clientOrderId",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
     {
-      "name": "forceCancelOrders",
+      "name": "forceCancelOrdersV2",
       "accounts": [
         {
-          "name": "greeks",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -1030,11 +865,6 @@ export type AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -1087,13 +917,25 @@ export type AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
-      "name": "closeMargin",
+      "name": "closeCrossMargin",
       "accounts": [
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
         },
@@ -1103,9 +945,30 @@ export type AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "zetaGroup",
+          "name": "zetaProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "subaccountIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "closeCrossMarginManager",
+      "accounts": [
+        {
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "zetaProgram",
@@ -1116,7 +979,7 @@ export type AbiWrapper = {
       "args": []
     },
     {
-      "name": "closeOpenOrders",
+      "name": "closeOpenOrdersV3",
       "accounts": [
         {
           "name": "state",
@@ -1124,7 +987,7 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -1139,7 +1002,7 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -1155,7 +1018,7 @@ export type AbiWrapper = {
         },
         {
           "name": "serumAuthority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -1173,11 +1036,17 @@ export type AbiWrapper = {
         {
           "name": "mapNonce",
           "type": "u8"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
     {
-      "name": "liquidate",
+      "name": "liquidateV2",
       "accounts": [
         {
           "name": "state",
@@ -1190,12 +1059,12 @@ export type AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "liquidatorMarginAccount",
+          "name": "liquidatorAccount",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "greeks",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -1220,12 +1089,7 @@ export type AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "liquidatedMarginAccount",
+          "name": "liquidatedAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -1239,6 +1103,12 @@ export type AbiWrapper = {
         {
           "name": "amount",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     }
@@ -1257,6 +1127,32 @@ export type AbiWrapper = {
           },
           {
             "name": "Ask"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Asset",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "SOL"
+          },
+          {
+            "name": "BTC"
+          },
+          {
+            "name": "ETH"
+          },
+          {
+            "name": "APT"
+          },
+          {
+            "name": "ARB"
+          },
+          {
+            "name": "UNDEFINED"
           }
         ]
       }
@@ -1288,14 +1184,14 @@ export type AbiWrapper = {
 };
 
 export const IDL: AbiWrapper = {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "name": "abi_wrapper",
   "instructions": [
     {
-      "name": "initializeMarginAccount",
+      "name": "initializeCrossMarginAccountManager",
       "accounts": [
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
         },
@@ -1306,7 +1202,7 @@ export const IDL: AbiWrapper = {
         },
         {
           "name": "payer",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true
         },
         {
@@ -1318,25 +1214,56 @@ export const IDL: AbiWrapper = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
         }
       ],
       "args": []
     },
     {
-      "name": "initializeOpenOrders",
+      "name": "initializeCrossMarginAccount",
       "accounts": [
         {
-          "name": "state",
+          "name": "crossMarginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "crossMarginAccountManager",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "zetaProgram",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "subaccountIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "initializeOpenOrdersV3",
+      "accounts": [
+        {
+          "name": "state",
           "isMut": false,
           "isSigner": false
         },
@@ -1356,7 +1283,7 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -1396,16 +1323,18 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
-      "name": "deposit",
+      "name": "depositV2",
       "accounts": [
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
         {
           "name": "marginAccount",
           "isMut": true,
@@ -1442,8 +1371,8 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "greeks",
-          "isMut": false,
+          "name": "pricing",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1460,15 +1389,15 @@ export const IDL: AbiWrapper = {
       ]
     },
     {
-      "name": "withdraw",
+      "name": "withdrawV2",
       "accounts": [
         {
-          "name": "zetaGroup",
+          "name": "state",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "pricing",
           "isMut": true,
           "isSigner": false
         },
@@ -1478,13 +1407,18 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
+          "name": "marginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "userTokenAccount",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "socializedLossAccount",
-          "isMut": true,
+          "name": "tokenProgram",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -1493,33 +1427,8 @@ export const IDL: AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "state",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracle",
+          "name": "socializedLossAccount",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupFeed",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupProgram",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -1536,7 +1445,7 @@ export const IDL: AbiWrapper = {
       ]
     },
     {
-      "name": "placeOrderV4",
+      "name": "placePerpOrderV3",
       "accounts": [
         {
           "name": "state",
@@ -1544,7 +1453,7 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -1570,196 +1479,6 @@ export const IDL: AbiWrapper = {
         },
         {
           "name": "serumAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "openOrders",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marketAccounts",
-          "accounts": [
-            {
-              "name": "market",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "requestQueue",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "eventQueue",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "bids",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "asks",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "orderPayerTokenAccount",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "coinVault",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "pcVault",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "coinWallet",
-              "isMut": true,
-              "isSigner": false
-            },
-            {
-              "name": "pcWallet",
-              "isMut": true,
-              "isSigner": false
-            }
-          ]
-        },
-        {
-          "name": "oracle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupFeed",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oracleBackupProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marketNode",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "marketMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "price",
-          "type": "u64"
-        },
-        {
-          "name": "size",
-          "type": "u64"
-        },
-        {
-          "name": "side",
-          "type": {
-            "defined": "Side"
-          }
-        },
-        {
-          "name": "orderType",
-          "type": {
-            "defined": "OrderType"
-          }
-        },
-        {
-          "name": "clientOrderId",
-          "type": {
-            "option": "u64"
-          }
-        },
-        {
-          "name": "tag",
-          "type": {
-            "option": "string"
-          }
-        },
-        {
-          "name": "tifOffset",
-          "type": {
-            "option": "u16"
-          }
-        }
-      ]
-    },
-    {
-      "name": "placePerpOrderV2",
-      "accounts": [
-        {
-          "name": "state",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "marginAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "dexProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "serumAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "greeks",
           "isMut": false,
           "isSigner": false
         },
@@ -1902,6 +1621,12 @@ export const IDL: AbiWrapper = {
           "type": {
             "option": "u16"
           }
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -1917,11 +1642,6 @@ export const IDL: AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -1984,6 +1704,12 @@ export const IDL: AbiWrapper = {
         {
           "name": "orderId",
           "type": "u128"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -1999,11 +1725,6 @@ export const IDL: AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -2066,6 +1787,12 @@ export const IDL: AbiWrapper = {
         {
           "name": "orderId",
           "type": "u128"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -2081,11 +1808,6 @@ export const IDL: AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -2138,7 +1860,14 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
       "name": "cancelOrderByClientOrderId",
@@ -2151,11 +1880,6 @@ export const IDL: AbiWrapper = {
         {
           "name": "cancelAccounts",
           "accounts": [
-            {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
             {
               "name": "state",
               "isMut": false,
@@ -2213,6 +1937,12 @@ export const IDL: AbiWrapper = {
         {
           "name": "clientOrderId",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
@@ -2228,11 +1958,6 @@ export const IDL: AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -2289,14 +2014,20 @@ export const IDL: AbiWrapper = {
         {
           "name": "clientOrderId",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
     {
-      "name": "forceCancelOrders",
+      "name": "forceCancelOrdersV2",
       "accounts": [
         {
-          "name": "greeks",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -2319,11 +2050,6 @@ export const IDL: AbiWrapper = {
           "name": "cancelAccounts",
           "accounts": [
             {
-              "name": "zetaGroup",
-              "isMut": false,
-              "isSigner": false
-            },
-            {
               "name": "state",
               "isMut": false,
               "isSigner": false
@@ -2376,13 +2102,25 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
+        }
+      ]
     },
     {
-      "name": "closeMargin",
+      "name": "closeCrossMargin",
       "accounts": [
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
         },
@@ -2392,9 +2130,30 @@ export const IDL: AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "zetaGroup",
+          "name": "zetaProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "subaccountIndex",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "closeCrossMarginManager",
+      "accounts": [
+        {
+          "name": "crossMarginAccountManager",
           "isMut": true,
           "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
         },
         {
           "name": "zetaProgram",
@@ -2405,7 +2164,7 @@ export const IDL: AbiWrapper = {
       "args": []
     },
     {
-      "name": "closeOpenOrders",
+      "name": "closeOpenOrdersV3",
       "accounts": [
         {
           "name": "state",
@@ -2413,7 +2172,7 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -2428,7 +2187,7 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "marginAccount",
+          "name": "crossMarginAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -2444,7 +2203,7 @@ export const IDL: AbiWrapper = {
         },
         {
           "name": "serumAuthority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -2462,11 +2221,17 @@ export const IDL: AbiWrapper = {
         {
           "name": "mapNonce",
           "type": "u8"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     },
     {
-      "name": "liquidate",
+      "name": "liquidateV2",
       "accounts": [
         {
           "name": "state",
@@ -2479,12 +2244,12 @@ export const IDL: AbiWrapper = {
           "isSigner": true
         },
         {
-          "name": "liquidatorMarginAccount",
+          "name": "liquidatorAccount",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "greeks",
+          "name": "pricing",
           "isMut": false,
           "isSigner": false
         },
@@ -2509,12 +2274,7 @@ export const IDL: AbiWrapper = {
           "isSigner": false
         },
         {
-          "name": "zetaGroup",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "liquidatedMarginAccount",
+          "name": "liquidatedAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -2528,6 +2288,12 @@ export const IDL: AbiWrapper = {
         {
           "name": "amount",
           "type": "u64"
+        },
+        {
+          "name": "asset",
+          "type": {
+            "defined": "Asset"
+          }
         }
       ]
     }
@@ -2546,6 +2312,32 @@ export const IDL: AbiWrapper = {
           },
           {
             "name": "Ask"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Asset",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "SOL"
+          },
+          {
+            "name": "BTC"
+          },
+          {
+            "name": "ETH"
+          },
+          {
+            "name": "APT"
+          },
+          {
+            "name": "ARB"
+          },
+          {
+            "name": "UNDEFINED"
           }
         ]
       }

@@ -26,37 +26,36 @@ mod zeta_abi {
 
     use super::*;
 
-    pub(crate) fn initialize_margin_account(ctx: Context<InitializeMarginAccount>) -> Result<()> {
-        Ok(())
-    }
-
-    pub(crate) fn initialize_open_orders(ctx: Context<InitializeOpenOrders>) -> Result<()> {
-        Ok(())
-    }
-
-    pub(crate) fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
-        Ok(())
-    }
-
-    pub(crate) fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
-        Ok(())
-    }
-
-    pub(crate) fn place_order_v4(
-        ctx: Context<PlaceOrder>,
-        price: u64,
-        size: u64,
-        side: Side,
-        order_type: OrderType,
-        client_order_id: Option<u64>,
-        tag: Option<String>, // Not stored, only used when sniffing the transactions
-        tif_offset: Option<u16>,
+    pub(crate) fn initialize_cross_margin_account_manager(
+        ctx: Context<InitializeCrossMarginAccountManager>,
     ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn place_perp_order_v2(
-        ctx: Context<PlacePerpOrder>,
+    pub(crate) fn initialize_cross_margin_account(
+        ctx: Context<InitializeCrossMarginAccount>,
+        subaccount_index: u8,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn initialize_open_orders_v3(
+        ctx: Context<InitializeOpenOrdersV3>,
+        asset: Asset,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn deposit_v2(ctx: Context<DepositV2>, amount: u64) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn withdraw_v2(ctx: Context<WithdrawV2>, amount: u64) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn place_perp_order_v3(
+        ctx: Context<PlacePerpOrderV3>,
         price: u64,
         size: u64,
         side: Side,
@@ -64,6 +63,7 @@ mod zeta_abi {
         client_order_id: Option<u64>,
         tag: Option<String>, // Not stored, only used when sniffing the transactions
         tif_offset: Option<u16>,
+        asset: Asset,
     ) -> Result<()> {
         Ok(())
     }
@@ -72,6 +72,7 @@ mod zeta_abi {
         ctx: Context<CancelOrder>,
         side: Side,
         order_id: u128,
+        asset: Asset,
     ) -> Result<()> {
         Ok(())
     }
@@ -80,17 +81,19 @@ mod zeta_abi {
         ctx: Context<CancelOrder>,
         side: Side,
         order_id: u128,
+        asset: Asset,
     ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn cancel_all_market_orders(ctx: Context<CancelOrder>) -> Result<()> {
+    pub(crate) fn cancel_all_market_orders(ctx: Context<CancelOrder>, asset: Asset) -> Result<()> {
         Ok(())
     }
 
     pub(crate) fn cancel_order_by_client_order_id(
         ctx: Context<CancelOrder>,
         client_order_id: u64,
+        asset: Asset,
     ) -> Result<()> {
         Ok(())
     }
@@ -98,23 +101,40 @@ mod zeta_abi {
     pub(crate) fn cancel_order_by_client_order_id_no_error(
         ctx: Context<CancelOrder>,
         client_order_id: u64,
+        asset: Asset,
     ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn force_cancel_orders(ctx: Context<ForceCancelOrders>) -> Result<()> {
+    pub(crate) fn force_cancel_orders_v2(
+        ctx: Context<ForceCancelOrdersV2>,
+        asset: Asset,
+    ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn liquidate(ctx: Context<Liquidate>, size: u64) -> Result<()> {
+    pub(crate) fn liquidate_v2(ctx: Context<LiquidateV2>, size: u64, asset: Asset) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn close_open_orders(ctx: Context<CloseOpenOrders>, _map_nonce: u8) -> Result<()> {
+    pub(crate) fn close_open_orders_v3(
+        ctx: Context<CloseOpenOrdersV3>,
+        _map_nonce: u8,
+        asset: Asset,
+    ) -> Result<()> {
         Ok(())
     }
 
-    pub(crate) fn close_margin_account(_ctx: Context<CloseMarginAccount>) -> Result<()> {
+    pub(crate) fn close_cross_margin_account_manager(
+        ctx: Context<CloseCrossMarginAccountManager>,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) fn close_cross_margin_account(
+        ctx: Context<CloseCrossMarginAccount>,
+        subaccount_index: u8,
+    ) -> Result<()> {
         Ok(())
     }
 }

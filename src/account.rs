@@ -6,63 +6,41 @@ use crate::*;
 #[repr(packed)]
 pub struct State {
     // Admin authority
-    pub admin: Pubkey,                                   // 32
-    pub state_nonce: u8,                                 // 1
-    pub serum_nonce: u8,                                 // 1
-    pub mint_auth_nonce: u8,                             // 1
-    pub num_underlyings: u8,                             // 1
-    pub num_flex_underlyings: u8,                        // 1
-    pub _null: [u8; 7],                                  // 7
-    pub strike_initialization_threshold_seconds: u32,    // 4
-    pub pricing_frequency_seconds: u32,                  // 4
-    pub liquidator_liquidation_percentage: u32,          // 4
-    pub insurance_vault_liquidation_percentage: u32,     // 4
-    pub native_d1_trade_fee_percentage: u64,             // 8
-    pub native_d1_underlying_fee_percentage: u64,        // 8
-    pub native_whitelist_underlying_fee_percentage: u64, // 8
-    pub native_deposit_limit: u64,                       // 8
-    pub expiration_threshold_seconds: u32,               // 4
-    pub position_movement_fee_bps: u8,                   // 1
-    pub margin_concession_percentage: u8,                // 1
-    pub treasury_wallet_nonce: u8,                       // 1
-    pub native_option_trade_fee_percentage: u64,         // 8
-    pub native_option_underlying_fee_percentage: u64,    // 8
-    pub referrals_admin: Pubkey,                         // 32
-    pub referrals_rewards_wallet_nonce: u8,              // 1
-    pub max_perp_delta_age: u16,                         // 2
-    pub secondary_admin: Pubkey,                         // 32
-    pub _padding: [u8; 73],                              // 73
-} // 255
-
-#[account(zero_copy)]
-#[repr(packed)]
-pub struct ZetaGroup {
-    pub nonce: u8,                                // 1
-    pub vault_nonce: u8,                          // 1
-    pub insurance_vault_nonce: u8,                // 1
-    pub front_expiry_index: u8,                   // 1
-    pub halt_state: HaltState,                    // 167
-    pub underlying_mint: Pubkey,                  // 32
-    pub oracle: Pubkey,                           // 32
-    pub greeks: Pubkey,                           // 32
-    pub pricing_parameters: PricingParameters,    // 112
-    pub margin_parameters: MarginParameters,      // 120
-    pub products: [Product; 46],                  // 137 * 43 = 5891
-    pub products_padding: [Product; 91],          //
-    pub perp: Product,                            // 43
-    pub expiry_series: [ExpirySeries; 2],         // 32 * 6 = 192
-    pub expiry_series_padding: [ExpirySeries; 4], //
-    pub total_insurance_vault_deposits: u64,      // 8
-    pub asset: Asset,                             // 1
-    pub expiry_interval_seconds: u32,             // 4
-    pub new_expiry_threshold_seconds: u32,        // 4
-    pub perp_parameters: PerpParameters,          // 24
-    pub perp_sync_queue: Pubkey,                  // 32
-    pub oracle_backup_feed: Pubkey,               // 32
-    pub perps_only: bool,                         // 1
-    pub flex_underlying: bool,                    // 1
-    pub padding: [u8; 964],                       // 964
-} // 7696
+    pub admin: Pubkey,                                           // 32
+    pub state_nonce: u8,                                         // 1
+    pub serum_nonce: u8,                                         // 1
+    pub mint_auth_nonce: u8,                                     // 1
+    pub num_underlyings: u8,                                     // 1
+    pub num_flex_underlyings: u8,                                // 1
+    pub _null: [u8; 7],                                          // 7
+    pub strike_initialization_threshold_seconds: u32,            // 4
+    pub pricing_frequency_seconds: u32,                          // 4
+    pub liquidator_liquidation_percentage: u32,                  // 4
+    pub insurance_vault_liquidation_percentage: u32,             // 4
+    pub native_d1_trade_fee_percentage: u64,                     // 8
+    pub native_d1_underlying_fee_percentage: u64,                // 8
+    pub native_whitelist_underlying_fee_percentage: u64,         // 8
+    pub native_deposit_limit: u64,                               // 8
+    pub expiration_threshold_seconds: u32,                       // 4
+    pub position_movement_fee_bps: u8,                           // 1
+    pub margin_concession_percentage: u8,                        // 1
+    pub treasury_wallet_nonce: u8,                               // 1
+    pub native_option_trade_fee_percentage: u64,                 // 8
+    pub native_option_underlying_fee_percentage: u64,            // 8
+    pub referrals_admin: Pubkey,                                 // 32
+    pub referrals_rewards_wallet_nonce: u8,                      // 1
+    pub max_perp_delta_age: u16,                                 // 2
+    pub secondary_admin: Pubkey,                                 // 32
+    pub vault_nonce: u8,                                         // 1
+    pub insurance_vault_nonce: u8,                               // 1
+    pub deprecated_total_insurance_vault_deposits: u64,          // 8
+    pub native_withdraw_limit: u64,                              // 8
+    pub withdraw_limit_epoch_seconds: u32,                       // 4
+    pub native_open_interest_limit: u64,                         // 8
+    pub halt_states: [HaltStateV2; ACTIVE_PERP_MARKETS],         // 18 * 5 = 90
+    pub halt_states_padding: [HaltStateV2; UNUSED_PERP_MARKETS], // 18 * 20 = 360
+    pub _padding: [u8; 338],                                     // 338
+} // 1000
 
 #[zero_copy]
 #[repr(packed)]
@@ -115,26 +93,9 @@ pub struct PricingParameters {
 #[derive(Default)]
 #[repr(packed)]
 pub struct MarginParameters {
-    // Futures
     pub future_margin_initial: u64,
     pub future_margin_maintenance: u64,
-
-    // Options initial
-    pub option_mark_percentage_long_initial: u64,
-    pub option_spot_percentage_long_initial: u64,
-    pub option_spot_percentage_short_initial: u64,
-    pub option_dynamic_percentage_short_initial: u64,
-
-    // Options maintenance
-    pub option_mark_percentage_long_maintenance: u64,
-    pub option_spot_percentage_long_maintenance: u64,
-    pub option_spot_percentage_short_maintenance: u64,
-    pub option_dynamic_percentage_short_maintenance: u64,
-
-    // Other parameters
-    pub option_short_put_cap_percentage: u64,
-    pub padding: [u8; 32],
-} // 120 bytes.
+} // 16 bytes.
 
 #[zero_copy]
 #[derive(Default)]
@@ -147,124 +108,85 @@ pub struct PerpParameters {
 
 #[zero_copy]
 #[repr(packed)]
-pub struct ExpirySeries {
-    pub active_ts: u64,
-    pub expiry_ts: u64,
-    pub dirty: bool,
-    pub padding: [u8; 15], // 32 - 17
-} // 32
+pub struct CrossMarginAccountInfo {
+    initialized: bool,                // 1
+    name: [u8; ACCOUNT_NAME_MAX_LEN], // 10
+} // 11
 
 #[account(zero_copy)]
 #[repr(packed)]
-pub struct MarginAccount {
-    pub authority: Pubkey,                             // 32
-    pub nonce: u8,                                     // 1
-    pub balance: u64,                                  // 8
-    pub force_cancel_flag: bool,                       // 1
-    pub open_orders_nonce: [u8; 138],                  // 138
-    pub series_expiry: [u64; 5],                       // 48
-    pub _series_expiry_padding: u64,                   //
-    pub product_ledgers: [ProductLedger; 46],          // 138 * 40 = 5520
-    pub _product_ledgers_padding: [ProductLedger; 91], //
-    pub perp_product_ledger: ProductLedger,            //
-    pub rebalance_amount: i64,                         // 8
-    pub asset: Asset,                                  // 1
-    pub account_type: MarginAccountType,               // 1
-    pub last_funding_delta: AnchorDecimal,             // 16
-    pub delegated_pubkey: Pubkey,                      // 32
-    pub _padding: [u8; 338],                           // 338
-} // 6144
+pub struct CrossMarginAccountManager {
+    pub nonce: u8,                                                     // 1
+    pub authority: Pubkey,                                             // 32
+    pub accounts: [CrossMarginAccountInfo; MAX_CROSS_MARGIN_ACCOUNTS], // 11 * 25 = 275
+} // 308
 
-impl MarginAccount {
-    // Calculates the total initial margin for all open orders and positions.
-    pub fn get_initial_margin(&self, greeks: &Greeks, zeta_group: &ZetaGroup, spot: u64) -> u64 {
-        let initial_margin_requirement: u64 = self
-            .product_ledgers
-            .iter()
-            .enumerate()
-            .map(|(i, ledger)| {
-                ledger.get_initial_margin(
-                    greeks.mark_prices[i],
-                    &zeta_group.products[i],
-                    spot,
-                    &zeta_group.margin_parameters,
-                )
-            })
-            .sum();
-
-        // Perps have a different layout
-        let perp_margin_requirement: u64 = self.perp_product_ledger.get_initial_margin(
-            spot,
-            &zeta_group.perp,
-            spot,
-            &zeta_group.margin_parameters,
-        );
-
-        initial_margin_requirement
-            .checked_add(perp_margin_requirement)
-            .unwrap()
-    }
-
-    pub fn get_maintenance_margin(
-        &self,
-        greeks: &Greeks,
-        zeta_group: &ZetaGroup,
-        spot: u64,
-    ) -> u64 {
-        let maintenance_margin_requirement: u64 = self
-            .product_ledgers
-            .iter()
-            .enumerate()
-            .map(|(i, product_ledgers)| {
-                product_ledgers.get_maintenance_margin(
-                    greeks.mark_prices[i],
-                    &zeta_group.products[i],
-                    spot,
-                    &zeta_group.margin_parameters,
-                )
-            })
-            .sum();
-
-        // Perps have a different layout
-        let perp_margin_requirement: u64 = self.perp_product_ledger.get_maintenance_margin(
-            spot,
-            &zeta_group.perp,
-            spot,
-            &zeta_group.margin_parameters,
-        );
-
-        maintenance_margin_requirement
-            .checked_add(perp_margin_requirement)
-            .unwrap()
-    }
-
-    pub fn get_unrealized_pnl(&self, greeks: &Greeks, spot: u64) -> i64 {
-        let pnl: i64 = self
-            .product_ledgers
-            .iter()
-            .enumerate()
-            .map(|(i, product_ledger)| {
-                (product_ledger
-                    .position
-                    .get_unrealized_pnl(greeks.mark_prices[i]) as i128) as i64
-            })
-            .sum();
-
-        // Perps have a different layout
-        let perp_pnl: i64 = self.perp_product_ledger.position.get_unrealized_pnl(spot);
-
-        pnl.checked_add(perp_pnl).unwrap()
-    }
-}
-
-#[zero_copy]
-#[derive(Default)]
+#[account(zero_copy)]
 #[repr(packed)]
-pub struct ProductGreeks {
-    pub delta: u64,
-    pub vega: AnchorDecimal,
-    pub volatility: AnchorDecimal,
-} // 40
+pub struct CrossMarginAccount {
+    pub authority: Pubkey,                                                  // 32
+    pub delegated_pubkey: Pubkey,                                           // 32
+    pub balance: u64,                                                       // 8
+    pub subaccount_index: u8,                                               // 1
+    pub nonce: u8,                                                          // 1
+    pub force_cancel_flag: bool,                                            // 1
+    pub account_type: MarginAccountType,                                    // 1
+    pub open_orders_nonces: [u8; ACTIVE_PERP_MARKETS],                      // 5
+    pub _open_orders_nonces_padding: [u8; UNUSED_PERP_MARKETS],             // 20
+    pub rebalance_amount: i64,                                              // 8
+    pub last_funding_deltas: [AnchorDecimal; ACTIVE_PERP_MARKETS],          // 16 * 5 = 80
+    pub _last_funding_deltas_padding: [AnchorDecimal; UNUSED_PERP_MARKETS], // 16 * 20 = 320
+    pub product_ledgers: [ProductLedger; ACTIVE_PERP_MARKETS],              // 5 * 40 = 305
+    pub _product_ledgers_padding: [ProductLedger; UNUSED_PERP_MARKETS],     // 20 * 40 = 1220
+    pub _padding: [u8; 2000],
+} // 3509
+
+#[account(zero_copy)]
+#[repr(packed)]
+pub struct PerpSyncQueue {
+    pub nonce: u8,                   // 1
+    pub head: u16,                   // 2
+    pub length: u16,                 // 2
+    pub queue: [AnchorDecimal; 600], // 16 * 600 = 9600
+} // 9605
+
+#[account(zero_copy)]
+#[repr(packed)]
+pub struct Pricing {
+    pub nonce: u8,                                                           // 1
+    pub mark_prices: [u64; ACTIVE_PERP_MARKETS],                             // 8 * 5 = 40
+    pub _mark_prices_padding: [u64; UNUSED_PERP_MARKETS],                    // 8 * 20 = 160
+    pub update_timestamps: [u64; ACTIVE_PERP_MARKETS],                       // 8 * 5 = 40
+    pub _update_timestamps_padding: [u64; UNUSED_PERP_MARKETS],              // 8 * 20 = 160
+    pub funding_deltas: [AnchorDecimal; ACTIVE_PERP_MARKETS],                // 16 * 5 = 80
+    pub _funding_deltas_padding: [AnchorDecimal; UNUSED_PERP_MARKETS],       // 16 * 20 = 320
+    pub latest_funding_rates: [AnchorDecimal; ACTIVE_PERP_MARKETS],          // 16 * 5 = 80
+    pub _latest_funding_rates_padding: [AnchorDecimal; UNUSED_PERP_MARKETS], // 16 * 20 = 320
+    pub latest_midpoints: [u64; ACTIVE_PERP_MARKETS],                        // 8 * 5 = 40
+    pub _latest_midpoints_padding: [u64; UNUSED_PERP_MARKETS],               // 8 * 20 = 160
+    pub oracles: [Pubkey; ACTIVE_PERP_MARKETS],                              // 32 * 5 = 160
+    pub _oracles_padding: [Pubkey; UNUSED_PERP_MARKETS],                     // 32 * 20 = 640
+    pub oracle_backup_feeds: [Pubkey; ACTIVE_PERP_MARKETS],                  // 32 * 5 = 160
+    pub _oracle_backup_feeds_padding: [Pubkey; UNUSED_PERP_MARKETS],         // 32 * 20 = 640
+    pub markets: [Pubkey; ACTIVE_PERP_MARKETS],                              // 32 * 5 = 160
+    pub _markets_padding: [Pubkey; UNUSED_PERP_MARKETS],                     // 32 * 20 = 640
+    pub perp_sync_queues: [Pubkey; ACTIVE_PERP_MARKETS],                     // 32 * 5 = 160
+    pub _perp_sync_queues_padding: [Pubkey; UNUSED_PERP_MARKETS],            // 32 * 20 = 640
+    pub perp_parameters: [PerpParameters; ACTIVE_PERP_MARKETS],              // 24 * 5 = 120
+    pub _perp_parameters_padding: [PerpParameters; UNUSED_PERP_MARKETS],     // 24 * 20 = 480
+    pub margin_parameters: [MarginParameters; ACTIVE_PERP_MARKETS],          // 16 * 5 = 80
+    pub _margin_parameters_padding: [MarginParameters; UNUSED_PERP_MARKETS], // 16 * 20 = 320
+    pub products: [Product; ACTIVE_PERP_MARKETS],                            // 43 * 5 = 215
+    pub _products_padding: [Product; UNUSED_PERP_MARKETS],                   // 43 * 20 = 860
+    pub zeta_group_keys: [Pubkey; ACTIVE_PERP_MARKETS],                      // 32 * 5 = 160
+    pub _zeta_group_keys_padding: [Pubkey; UNUSED_PERP_MARKETS],             // 32 * 20 = 640
+    pub total_insurance_vault_deposits: u64,                                 // 8
+    pub last_withdraw_timestamp: u64,                                        // 8
+    pub net_outflow_sum: i64,                                                // 8
+    pub halt_force_pricing: [bool; ACTIVE_PERP_MARKETS],                     // 1 * 5 = 5
+    pub _halt_force_pricing_padding: [bool; UNUSED_PERP_MARKETS],            // 1 * 20 = 20
+    pub _padding: [u8; 2707],                                                // 2707
+} // 10232 which is the max for PDAs (incl 8 for discriminator)
 
 #[zero_copy]
 #[derive(Default)]
@@ -276,32 +198,12 @@ pub struct AnchorDecimal {
     pub mid: u32,
 } // 16
 
-#[account(zero_copy)]
-#[repr(packed)]
-pub struct Greeks {
-    pub nonce: u8,                                       // 1
-    pub mark_prices: [u64; 46],                          // 8 * 46 = 368
-    pub _mark_prices_padding: [u64; 91],                 // 8 * 91 =  728
-    pub perp_mark_price: u64,                            // 8
-    pub product_greeks: [ProductGreeks; 22],             // 22 * 40 = 880
-    pub _product_greeks_padding: [ProductGreeks; 44],    // 44 * 40 = 1760
-    pub update_timestamp: [u64; 2],                      // 16
-    pub _update_timestamp_padding: [u64; 4],             // 32
-    pub retreat_expiration_timestamp: [u64; 2],          // 16
-    pub _retreat_expiration_timestamp_padding: [u64; 4], // 32
-    pub interest_rate: [i64; 2],                         // 16
-    pub _interest_rate_padding: [i64; 4],                // 32
-    pub nodes: [u64; 5],                                 // 40
-    pub volatility: [u64; 10],                           // 80
-    pub _volatility_padding: [u64; 20],                  // 160
-    pub node_keys: [Pubkey; 138],                        // 138 * 32 = 4416
-    pub halt_force_pricing: [bool; 6],                   // 6
-    pub perp_update_timestamp: u64,                      // 8
-    pub perp_funding_delta: AnchorDecimal,               // 16
-    pub perp_latest_funding_rate: AnchorDecimal,         // 16
-    pub perp_latest_midpoint: u64,                       // 8
-    pub _padding: [u8; 1593],                            // 1593
-} // 10232
+#[account]
+#[derive(Default)]
+pub struct CrossOpenOrdersMap {
+    pub user_key: Pubkey,
+    pub subaccount_index: u8,
+}
 
 #[account]
 #[derive(Default)]
@@ -505,31 +407,14 @@ pub enum MarginAccountType {
     MarketMaker = 1,
 }
 
-#[repr(u8)]
-#[derive(PartialEq)]
-pub enum ExpirySeriesStatus {
-    Uninitialized = 0, // Still in default state
-    Initialized = 1,   // Initialized but not active yet
-    Live = 2,          // Active and trading.
-    Expired = 3,       // Intermediate state after active trading
-    ExpiredDirty = 4,  // State when series has expired but markets haven't been cleaned
-}
-
 #[zero_copy]
 #[repr(packed)]
-pub struct HaltState {
-    halted: bool,                             // 1
-    spot_price: u64,                          // 8
-    timestamp: u64,                           // 8
-    mark_prices_set: [bool; 2],               // 2
-    _mark_prices_set_padding: [bool; 3],      // 3
-    perp_mark_price_set: bool,                // 1
-    market_nodes_cleaned: [bool; 2],          // 2
-    _market_nodes_cleaned_padding: [bool; 4], // 4
-    market_cleaned: [bool; 46],               // 46
-    _market_cleaned_padding: [bool; 91],      // 91
-    perp_market_cleaned: bool,                // 1
-} // 167
+pub struct HaltStateV2 {
+    halted: bool,         // 1
+    timestamp: u64,       // 8
+    spot_price: u64,      // 8
+    market_cleaned: bool, // 1
+} // 18
 
 #[repr(u8)]
 #[derive(PartialEq, Clone, Copy, AnchorSerialize, AnchorDeserialize)]
@@ -558,6 +443,7 @@ pub enum Asset {
     BTC = 1,
     ETH = 2,
     APT = 3,
+    ARB = 4,
     UNDEFINED = 255,
 }
 

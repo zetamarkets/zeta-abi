@@ -1,125 +1,128 @@
 use crate::*;
 
 #[derive(Accounts)]
-pub struct InitializeMarginAccount<'info> {
+pub struct InitializeCrossMarginAccountManager<'info> {
     #[account(mut)]
-    pub margin_account: UncheckedAccount<'info>,
+    pub cross_margin_account_manager: UncheckedAccount<'info>,
     pub authority: Signer<'info>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub zeta_program: Program<'info, id::ZetaProgram>,
     pub system_program: Program<'info, System>,
-    pub zeta_group: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]
-pub struct InitializeOpenOrders<'info> {
+pub struct CloseCrossMarginAccountManager<'info> {
+    #[account(mut)]
+    pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeCrossMarginAccount<'info> {
+    #[account(mut)]
+    pub cross_margin_account: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
+    pub authority: Signer<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub zeta_program: Program<'info, id::ZetaProgram>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(subaccount_index: u8)]
+pub struct CloseCrossMarginAccount<'info> {
+    #[account(mut)]
+    pub cross_margin_account: AccountLoader<'info, CrossMarginAccount>,
+    #[account(mut)]
+    pub cross_margin_account_manager: AccountLoader<'info, CrossMarginAccountManager>,
+    #[account(mut)]
+    pub authority: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeOpenOrdersV3<'info> {
     pub state: AccountLoader<'info, State>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
     pub dex_program: Program<'info, id::Dex>,
     pub system_program: Program<'info, System>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub cross_margin_account: AccountLoader<'info, CrossMarginAccount>,
     pub authority: Signer<'info>,
     // Marked mutable since it pays
     #[account(mut)]
     pub payer: Signer<'info>,
-    pub market: UncheckedAccount<'info>,
-    pub serum_authority: UncheckedAccount<'info>,
+    pub market: AccountInfo<'info>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub open_orders_map: Box<Account<'info, OpenOrdersMap>>,
+    pub open_orders_map: Box<Account<'info, CrossOpenOrdersMap>>,
     pub rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
-pub struct PlaceOrder<'info> {
+pub struct PlacePerpOrderV3<'info> {
     pub state: AccountLoader<'info, State>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub pricing: AccountLoader<'info, Pricing>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     pub authority: Signer<'info>,
     pub dex_program: Program<'info, id::Dex>,
     pub token_program: Program<'info, Token>,
-    pub serum_authority: UncheckedAccount<'info>,
-    pub greeks: AccountLoader<'info, Greeks>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     pub rent: Sysvar<'info, Rent>,
     pub market_accounts: MarketAccounts<'info>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
-    #[account(mut)]
-    pub market_node: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub market_mint: Box<Account<'info, Mint>>,
-    pub mint_authority: UncheckedAccount<'info>,
-}
-
-#[derive(Accounts)]
-pub struct PlacePerpOrder<'info> {
-    pub state: AccountLoader<'info, State>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
-    #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
-    pub authority: Signer<'info>,
-    pub dex_program: Program<'info, id::Dex>,
-    pub token_program: Program<'info, Token>,
-    pub serum_authority: UncheckedAccount<'info>,
-    pub greeks: AccountLoader<'info, Greeks>,
-    #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
-    pub rent: Sysvar<'info, Rent>,
-    pub market_accounts: MarketAccounts<'info>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub oracle: AccountInfo<'info>,
+    pub oracle_backup_feed: AccountInfo<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub market_mint: Box<Account<'info, Mint>>,
-    pub mint_authority: UncheckedAccount<'info>,
+    pub mint_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub perp_sync_queue: UncheckedAccount<'info>,
-}
-
-#[derive(Accounts)]
-pub struct Deposit<'info> {
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
-    #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
-    #[account(mut)]
-    pub vault: Box<Account<'info, TokenAccount>>,
-    #[account(mut)]
-    pub user_token_account: Box<Account<'info, TokenAccount>>,
-    #[account(mut)]
-    pub socialized_loss_account: UncheckedAccount<'info>,
-    pub authority: Signer<'info>,
-    pub token_program: Program<'info, Token>,
-    pub state: AccountLoader<'info, State>,
-    pub greeks: AccountLoader<'info, Greeks>,
+    pub perp_sync_queue: AccountLoader<'info, PerpSyncQueue>,
 }
 
 #[derive(Accounts)]
 #[instruction(amount: u64)]
-pub struct Withdraw<'info> {
-    pub state: AccountLoader<'info, State>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+pub struct DepositV2<'info> {
+    #[account(mut)]
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     #[account(mut)]
     pub vault: Box<Account<'info, TokenAccount>>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub user_token_account: Box<Account<'info, TokenAccount>>,
+    #[account(mut)]
+    pub socialized_loss_account: UncheckedAccount<'info>,
+    pub authority: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub state: AccountLoader<'info, State>,
+    #[account(mut)]
+    pub pricing: AccountLoader<'info, Pricing>,
+}
+
+#[derive(Accounts)]
+#[instruction(amount: u64)]
+pub struct WithdrawV2<'info> {
+    pub state: AccountLoader<'info, State>,
+    #[account(mut)]
+    pub pricing: AccountLoader<'info, Pricing>,
+    #[account(mut)]
+    pub vault: Box<Account<'info, TokenAccount>>,
+    #[account(mut)]
+    pub margin_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
     #[account(mut)]
     pub user_token_account: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub authority: Signer<'info>,
-    pub greeks: AccountLoader<'info, Greeks>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
     #[account(mut)]
     pub socialized_loss_account: UncheckedAccount<'info>,
 }
+
 #[derive(Accounts)]
 pub struct CancelOrder<'info> {
     pub authority: Signer<'info>,
@@ -127,28 +130,27 @@ pub struct CancelOrder<'info> {
 }
 
 #[derive(Accounts)]
-pub struct ForceCancelOrders<'info> {
-    pub greeks: UncheckedAccount<'info>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
+pub struct ForceCancelOrdersV2<'info> {
+    pub pricing: AccountLoader<'info, Pricing>,
+    pub oracle: AccountInfo<'info>,
+    pub oracle_backup_feed: AccountInfo<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
     pub cancel_accounts: CancelAccounts<'info>,
 }
 
 #[derive(Accounts)]
-pub struct Liquidate<'info> {
+pub struct LiquidateV2<'info> {
     pub state: AccountLoader<'info, State>,
     pub liquidator: Signer<'info>,
     #[account(mut)]
-    pub liquidator_margin_account: AccountLoader<'info, MarginAccount>,
-    pub greeks: AccountLoader<'info, Greeks>,
-    pub oracle: UncheckedAccount<'info>,
-    pub oracle_backup_feed: UncheckedAccount<'info>,
+    pub liquidator_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
+    pub pricing: AccountLoader<'info, Pricing>,
+    pub oracle: AccountInfo<'info>,
+    pub oracle_backup_feed: AccountInfo<'info>,
     pub oracle_backup_program: Program<'info, id::Chainlink>,
-    pub market: UncheckedAccount<'info>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub market: AccountInfo<'info>,
     #[account(mut)]
-    pub liquidated_margin_account: AccountLoader<'info, MarginAccount>,
+    pub liquidated_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount
 }
 
 #[derive(Accounts, Clone)]
@@ -178,47 +180,38 @@ pub struct MarketAccounts<'info> {
 // Shared accounts required for cancel order
 #[derive(Accounts)]
 pub struct CancelAccounts<'info> {
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
     pub state: AccountLoader<'info, State>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub margin_account: UncheckedAccount<'info>,
     pub dex_program: Program<'info, id::Dex>,
-    pub serum_authority: UncheckedAccount<'info>,
+    pub serum_authority: AccountInfo<'info>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     #[account(mut)]
-    pub market: UncheckedAccount<'info>,
+    pub market: AccountInfo<'info>,
     #[account(mut)]
-    pub bids: UncheckedAccount<'info>,
+    pub bids: AccountInfo<'info>,
     #[account(mut)]
-    pub asks: UncheckedAccount<'info>,
+    pub asks: AccountInfo<'info>,
     #[account(mut)]
-    pub event_queue: UncheckedAccount<'info>,
+    pub event_queue: AccountInfo<'info>,
 }
 
 #[derive(Accounts)]
-pub struct CloseOpenOrders<'info> {
+#[instruction(map_nonce: u8)]
+pub struct CloseOpenOrdersV3<'info> {
     pub state: AccountLoader<'info, State>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub pricing: AccountLoader<'info, Pricing>,
     pub dex_program: Program<'info, id::Dex>,
     #[account(mut)]
-    pub open_orders: UncheckedAccount<'info>,
+    pub open_orders: AccountInfo<'info>,
     #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
-    #[account(mut)]
-    pub authority: Signer<'info>,
-    pub market: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub serum_authority: UncheckedAccount<'info>,
-    #[account(mut)]
-    pub open_orders_map: Box<Account<'info, OpenOrdersMap>>,
-}
-
-#[derive(Accounts)]
-pub struct CloseMarginAccount<'info> {
-    #[account(mut)]
-    pub margin_account: AccountLoader<'info, MarginAccount>,
+    pub cross_margin_account: AccountLoader<'info, CrossMarginAccount>,
+    // Marked mutable since it is receiving lamports
     #[account(mut)]
     pub authority: Signer<'info>,
-    pub zeta_group: AccountLoader<'info, ZetaGroup>,
+    pub market: AccountInfo<'info>,
+    pub serum_authority: AccountInfo<'info>,
+    #[account(mut)]
+    pub open_orders_map: Box<Account<'info, CrossOpenOrdersMap>>,
 }
