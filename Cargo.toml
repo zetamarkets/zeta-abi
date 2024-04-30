@@ -24,4 +24,3 @@ default = ["no-entrypoint", "cpi"]
 anchor-lang = "0.26.0"
 anchor-spl = "0.26.0"
 solana-program = "1.14.16"
-chainlink_solana = "1.0.0"

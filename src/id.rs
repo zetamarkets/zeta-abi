@@ -25,12 +25,3 @@ impl anchor_lang::Id for Dex {
         }
     }
 }
-
-#[derive(Clone)]
-pub struct Chainlink;
-
-impl anchor_lang::Id for Chainlink {
-    fn id() -> Pubkey {
-        chainlink_solana::ID
-    }
-}

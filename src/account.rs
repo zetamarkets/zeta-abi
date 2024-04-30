@@ -166,26 +166,25 @@ pub struct Pricing {
     pub _latest_midpoints_padding: [u64; UNUSED_PERP_MARKETS],               // 8 * 20 = 160
     pub oracles: [Pubkey; ACTIVE_PERP_MARKETS],                              // 32 * 5 = 160
     pub _oracles_padding: [Pubkey; UNUSED_PERP_MARKETS],                     // 32 * 20 = 640
-    pub oracle_backup_feeds: [Pubkey; ACTIVE_PERP_MARKETS],                  // 32 * 5 = 160
-    pub _oracle_backup_feeds_padding: [Pubkey; UNUSED_PERP_MARKETS],         // 32 * 20 = 640
-    pub markets: [Pubkey; ACTIVE_PERP_MARKETS],                              // 32 * 5 = 160
-    pub _markets_padding: [Pubkey; UNUSED_PERP_MARKETS],                     // 32 * 20 = 640
-    pub perp_sync_queues: [Pubkey; ACTIVE_PERP_MARKETS],                     // 32 * 5 = 160
-    pub _perp_sync_queues_padding: [Pubkey; UNUSED_PERP_MARKETS],            // 32 * 20 = 640
-    pub perp_parameters: [PerpParameters; ACTIVE_PERP_MARKETS],              // 24 * 5 = 120
-    pub _perp_parameters_padding: [PerpParameters; UNUSED_PERP_MARKETS],     // 24 * 20 = 480
-    pub margin_parameters: [MarginParameters; ACTIVE_PERP_MARKETS],          // 16 * 5 = 80
+    pub _deprecated_oracle_backup_feeds: [Pubkey; ACTIVE_PERP_MARKETS + UNUSED_PERP_MARKETS], // 32 * 25 = 800
+    pub markets: [Pubkey; ACTIVE_PERP_MARKETS], // 32 * 5 = 160
+    pub _markets_padding: [Pubkey; UNUSED_PERP_MARKETS], // 32 * 20 = 640
+    pub perp_sync_queues: [Pubkey; ACTIVE_PERP_MARKETS], // 32 * 5 = 160
+    pub _perp_sync_queues_padding: [Pubkey; UNUSED_PERP_MARKETS], // 32 * 20 = 640
+    pub perp_parameters: [PerpParameters; ACTIVE_PERP_MARKETS], // 24 * 5 = 120
+    pub _perp_parameters_padding: [PerpParameters; UNUSED_PERP_MARKETS], // 24 * 20 = 480
+    pub margin_parameters: [MarginParameters; ACTIVE_PERP_MARKETS], // 16 * 5 = 80
     pub _margin_parameters_padding: [MarginParameters; UNUSED_PERP_MARKETS], // 16 * 20 = 320
-    pub products: [Product; ACTIVE_PERP_MARKETS],                            // 43 * 5 = 215
-    pub _products_padding: [Product; UNUSED_PERP_MARKETS],                   // 43 * 20 = 860
-    pub zeta_group_keys: [Pubkey; ACTIVE_PERP_MARKETS],                      // 32 * 5 = 160
-    pub _zeta_group_keys_padding: [Pubkey; UNUSED_PERP_MARKETS],             // 32 * 20 = 640
-    pub total_insurance_vault_deposits: u64,                                 // 8
-    pub last_withdraw_timestamp: u64,                                        // 8
-    pub net_outflow_sum: i64,                                                // 8
-    pub halt_force_pricing: [bool; ACTIVE_PERP_MARKETS],                     // 1 * 5 = 5
-    pub _halt_force_pricing_padding: [bool; UNUSED_PERP_MARKETS],            // 1 * 20 = 20
-    pub _padding: [u8; 2707],                                                // 2707
+    pub products: [Product; ACTIVE_PERP_MARKETS], // 43 * 5 = 215
+    pub _products_padding: [Product; UNUSED_PERP_MARKETS], // 43 * 20 = 860
+    pub zeta_group_keys: [Pubkey; ACTIVE_PERP_MARKETS], // 32 * 5 = 160
+    pub _zeta_group_keys_padding: [Pubkey; UNUSED_PERP_MARKETS], // 32 * 20 = 640
+    pub total_insurance_vault_deposits: u64,    // 8
+    pub last_withdraw_timestamp: u64,           // 8
+    pub net_outflow_sum: i64,                   // 8
+    pub halt_force_pricing: [bool; ACTIVE_PERP_MARKETS], // 1 * 5 = 5
+    pub _halt_force_pricing_padding: [bool; UNUSED_PERP_MARKETS], // 1 * 20 = 20
+    pub _padding: [u8; 2707],                   // 2707
 } // 10232 which is the max for PDAs (incl 8 for discriminator)
 
 #[zero_copy]
