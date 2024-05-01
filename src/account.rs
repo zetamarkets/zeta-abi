@@ -2,7 +2,7 @@
 
 use crate::*;
 
-#[account(zero_copy)]
+#[account(zero_copy(unsafe))]
 #[repr(packed)]
 pub struct State {
     // Admin authority
@@ -42,7 +42,7 @@ pub struct State {
     pub _padding: [u8; 338],                                     // 338
 } // 1000
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[repr(packed)]
 pub struct Product {
     // Serum market
@@ -53,7 +53,7 @@ pub struct Product {
     pub kind: Kind,
 } // 32 + 9 + 1 + 1 = 43 bytes
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[repr(packed)]
 pub struct Strike {
     is_set: bool,
@@ -73,7 +73,7 @@ impl Strike {
     }
 }
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct PricingParameters {
@@ -89,7 +89,7 @@ pub struct PricingParameters {
     pub max_interest_rate: i64,                 // 8
 } // 112
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct MarginParameters {
@@ -97,7 +97,7 @@ pub struct MarginParameters {
     pub future_margin_maintenance: u64,
 } // 16 bytes.
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct PerpParameters {
@@ -106,14 +106,14 @@ pub struct PerpParameters {
     pub impact_cash_delta: u64,        // 8
 } // 24
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[repr(packed)]
 pub struct CrossMarginAccountInfo {
     initialized: bool,                // 1
     name: [u8; ACCOUNT_NAME_MAX_LEN], // 10
 } // 11
 
-#[account(zero_copy)]
+#[account(zero_copy(unsafe))]
 #[repr(packed)]
 pub struct CrossMarginAccountManager {
     pub nonce: u8,                                                     // 1
@@ -121,7 +121,7 @@ pub struct CrossMarginAccountManager {
     pub accounts: [CrossMarginAccountInfo; MAX_CROSS_MARGIN_ACCOUNTS], // 11 * 25 = 275
 } // 308
 
-#[account(zero_copy)]
+#[account(zero_copy(unsafe))]
 #[repr(packed)]
 pub struct CrossMarginAccount {
     pub authority: Pubkey,                                                  // 32
@@ -141,7 +141,7 @@ pub struct CrossMarginAccount {
     pub _padding: [u8; 2000],
 } // 3509
 
-#[account(zero_copy)]
+#[account(zero_copy(unsafe))]
 #[repr(packed)]
 pub struct PerpSyncQueue {
     pub nonce: u8,                   // 1
@@ -150,7 +150,7 @@ pub struct PerpSyncQueue {
     pub queue: [AnchorDecimal; 600], // 16 * 600 = 9600
 } // 9605
 
-#[account(zero_copy)]
+#[account(zero_copy(unsafe))]
 #[repr(packed)]
 pub struct Pricing {
     pub nonce: u8,                                                           // 1
@@ -187,7 +187,7 @@ pub struct Pricing {
     pub _padding: [u8; 2707],                   // 2707
 } // 10232 which is the max for PDAs (incl 8 for discriminator)
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct AnchorDecimal {
@@ -210,7 +210,7 @@ pub struct OpenOrdersMap {
     pub user_key: Pubkey,
 }
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct Position {
@@ -250,7 +250,7 @@ impl Position {
     }
 }
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct OrderState {
@@ -258,7 +258,7 @@ pub struct OrderState {
     pub opening_orders: [u64; 2],
 } // 24
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[derive(Default)]
 #[repr(packed)]
 pub struct ProductLedger {
@@ -406,7 +406,7 @@ pub enum MarginAccountType {
     MarketMaker = 1,
 }
 
-#[zero_copy]
+#[zero_copy(unsafe)]
 #[repr(packed)]
 pub struct HaltStateV2 {
     halted: bool,         // 1
