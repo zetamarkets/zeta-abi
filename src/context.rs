@@ -79,7 +79,7 @@ pub struct PlacePerpOrderV3<'info> {
     pub market_accounts: MarketAccounts<'info>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
+    pub oracle_backup_program: AccountInfo<'info>,
     #[account(mut)]
     pub market_mint: Box<Account<'info, Mint>>,
     pub mint_authority: AccountInfo<'info>,
@@ -134,7 +134,7 @@ pub struct ForceCancelOrdersV2<'info> {
     pub pricing: AccountLoader<'info, Pricing>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
+    pub oracle_backup_program: AccountInfo<'info>,
     pub cancel_accounts: CancelAccounts<'info>,
 }
 
@@ -147,7 +147,7 @@ pub struct LiquidateV2<'info> {
     pub pricing: AccountLoader<'info, Pricing>,
     pub oracle: AccountInfo<'info>,
     pub oracle_backup_feed: AccountInfo<'info>,
-    pub oracle_backup_program: Program<'info, id::Chainlink>,
+    pub oracle_backup_program: AccountInfo<'info>,
     pub market: AccountInfo<'info>,
     #[account(mut)]
     pub liquidated_account: UncheckedAccount<'info>, // Either CrossMarginAccount or MarginAccount

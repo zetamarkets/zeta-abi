@@ -552,16 +552,6 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
-[[package]]
-name = "chainlink_solana"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1bc07ff7987366d193e8e1913b4aafcb83f919ad71be8c040b420bcedb6339b"
-dependencies = [
- "borsh",
- "borsh-derive",
- "solana-program",
-]
 
 [[package]]
 name = "chrono"
@@ -2400,6 +2390,5 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bytemuck",
- "chainlink_solana",
  "solana-program",
 ]
